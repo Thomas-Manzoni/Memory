@@ -6,8 +6,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.memory.viewmodel.FlashcardViewModel
 
 @Composable
@@ -54,3 +56,4 @@ fun SectionSelectionMenu(viewModel: FlashcardViewModel, onSectionSelected: (Int)
         }
     }
 }
+

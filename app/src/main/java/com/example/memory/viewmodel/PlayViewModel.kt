@@ -8,8 +8,9 @@ import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
+import kotlin.random.Random
 
-class FlashcardViewModel(application: Application) : AndroidViewModel(application) {
+class PlayCardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = FlashcardRepository(application.applicationContext)
 
@@ -29,20 +30,42 @@ class FlashcardViewModel(application: Application) : AndroidViewModel(applicatio
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
 
     private var currentFlashcardIndex = 0
+    private var numberOfSections = 2
 
     init {
-        loadFlashcards()
+        loadFlashcardRepo()
+        loadRandomFlashcard()
     }
 
-    private fun loadFlashcards() {
+    private fun loadFlashcardRepo() {
         val sections = repository.loadFlashcardsFromJson()
         _flashcardSections.value = sections
-
-        // Automatically select the first unit if available
-        if (sections.isNotEmpty()) {
-            selectSection(1)
-        }
     }
+
+    fun loadRandomFlashcard() {
+        val numberOfSections = _flashcardSections.value?.size ?: 0
+        if (numberOfSections == 0) return // Prevent crash if no sections exist
+
+        val randomSectionIndex = Random.nextInt(0, numberOfSections) // Ensure valid index
+        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
+
+        val unitCount = selectedSection.units.size
+        if (unitCount == 0) return // Prevent crash if no units exist
+
+        val randomUnitIndex = Random.nextInt(0, unitCount) // Ensure valid index
+        val selectedUnit = selectedSection.units[randomUnitIndex]
+
+        // Now, count the flashcards (words) inside the selected unit
+        val flashcardCount = selectedUnit.flashcards.size // This gives the number of flashcards
+        if (flashcardCount == 0) return
+
+        val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
+        val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
+        _currentFlashcard.value = selectedFlashcard
+    }
+
+
+
 
     fun selectUnit(index: Int) {
         _flashcardUnits.value?.let { units ->
