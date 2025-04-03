@@ -8,9 +8,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.memory.ui.FlashcardScreen
+import com.example.memory.ui.PlayScreen
 import com.example.memory.ui.UnitSelectionMenu
 import com.example.memory.ui.SectionSelectionMenu
+import com.example.memory.ui.StartMenu
 import com.example.memory.viewmodel.FlashcardViewModel
+import com.example.memory.viewmodel.PlayCardViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +21,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val viewModel: FlashcardViewModel = viewModel()
+            val viewModelPlay: PlayCardViewModel = viewModel()
 
-            NavHost(navController = navController, startDestination = "section_selection") {
+            NavHost(navController = navController, startDestination = "start_menu") {
+
+                // Start Menu Screen
+                composable("start_menu") {
+                    StartMenu(navController)
+                }
+
+                composable("play_mode") {
+                    PlayScreen(viewModelPlay)
+                }
+
+                // Existing Flashcard Navigation
                 composable("section_selection") {
                     SectionSelectionMenu(viewModel) { selectedSection ->
                         navController.navigate("unit_selection/$selectedSection")
@@ -29,15 +44,14 @@ class MainActivity : ComponentActivity() {
                 composable("unit_selection/{section}") { backStackEntry ->
                     val sectionIndex = backStackEntry.arguments?.getString("section")?.toIntOrNull() ?: 0
                     viewModel.selectSection(sectionIndex)
-                    UnitSelectionMenu(viewModel) { selectedUnit -> // I interpret this as if on the onUnitSelected is triggered we perform this
+                    UnitSelectionMenu(viewModel) { selectedUnit ->
                         navController.navigate("flashcard_screen/$selectedUnit")
                     }
                 }
 
                 composable("flashcard_screen/{unit}") { backStackEntry ->
-                    // It reads the string of the unit passed by the previous call and uses the viewmodel to load the unit
                     val unitIndex = backStackEntry.arguments?.getString("unit")?.toIntOrNull() ?: 0
-                    viewModel.selectUnit(unitIndex) // Load the selected unit
+                    viewModel.selectUnit(unitIndex)
                     FlashcardScreen(viewModel)
                 }
             }

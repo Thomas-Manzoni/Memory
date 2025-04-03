@@ -8,8 +8,9 @@ import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
+import kotlin.random.Random
 
-class FlashcardViewModel(application: Application) : AndroidViewModel(application) {
+class PlayCardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = FlashcardRepository(application.applicationContext)
 
@@ -28,30 +29,44 @@ class FlashcardViewModel(application: Application) : AndroidViewModel(applicatio
     private val _currentFlashcard = MutableLiveData<Flashcard?>()
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
 
-    private var currentFlashcardIndex = 0
+    private val _currentSectionVal = MutableLiveData(0)
+    val currentSectionVal: LiveData<Int> = _currentSectionVal
+    private val _currentUnitVal = MutableLiveData(0)
+    val currentUnitVal: LiveData<Int> = _currentUnitVal
+
+    private var numberOfSections = 2
 
     init {
-        loadFlashcards()
+        loadFlashcardRepo()
+        loadRandomFlashcard()
     }
 
-    private fun loadFlashcards() {
+    private fun loadFlashcardRepo() {
         val sections = repository.loadFlashcardsFromJson()
         _flashcardSections.value = sections
-
-        // Automatically select the first unit if available
-        if (sections.isNotEmpty()) {
-            selectSection(1)
-        }
     }
 
-    fun selectUnit(index: Int) {
-        _flashcardUnits.value?.let { units ->
-            if (index in units.indices) {
-                _currentUnit.value = units[index]
-                currentFlashcardIndex = 0
-                showFlashcard()
-            }
-        }
+    fun loadRandomFlashcard() {
+        //val numberOfSections = _flashcardSections.value?.size ?: 0
+        if (numberOfSections == 0) return
+
+        val randomSectionIndex = Random.nextInt(0, numberOfSections)
+        _currentSectionVal.value = randomSectionIndex
+        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
+
+        val unitCount = selectedSection.units.size
+        if (unitCount == 0) return
+
+        val randomUnitIndex = Random.nextInt(0, unitCount)
+        _currentUnitVal.value = randomUnitIndex
+        val selectedUnit = selectedSection.units[randomUnitIndex]
+
+        val flashcardCount = selectedUnit.flashcards.size
+        if (flashcardCount == 0) return
+
+        val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
+        val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
+        _currentFlashcard.value = selectedFlashcard
     }
 
     fun selectSection(index: Int) {
@@ -68,34 +83,6 @@ class FlashcardViewModel(application: Application) : AndroidViewModel(applicatio
             if (units.isNotEmpty()) {
                 // Assigns the values of all the units
                 _flashcardUnits.value = units
-            }
-        }
-    }
-
-    private fun showFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showNextFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Increment the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.size
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showPrevFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Decrement the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.size) % flashcards.size
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
             }
         }
     }
