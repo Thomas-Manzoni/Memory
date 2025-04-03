@@ -29,7 +29,11 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private val _currentFlashcard = MutableLiveData<Flashcard?>()
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
 
-    private var currentFlashcardIndex = 0
+    private val _currentSectionVal = MutableLiveData(0)
+    val currentSectionVal: LiveData<Int> = _currentSectionVal
+    private val _currentUnitVal = MutableLiveData(0)
+    val currentUnitVal: LiveData<Int> = _currentUnitVal
+
     private var numberOfSections = 2
 
     init {
@@ -42,41 +46,27 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _flashcardSections.value = sections
     }
 
-    fun loadRandomFlashcard(): Pair<Int, Int>? {
+    fun loadRandomFlashcard() {
         //val numberOfSections = _flashcardSections.value?.size ?: 0
-        if (numberOfSections == 0) return null
+        if (numberOfSections == 0) return
 
         val randomSectionIndex = Random.nextInt(0, numberOfSections)
-        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return null
+        _currentSectionVal.value = randomSectionIndex
+        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
 
         val unitCount = selectedSection.units.size
-        if (unitCount == 0) return null
+        if (unitCount == 0) return
 
         val randomUnitIndex = Random.nextInt(0, unitCount)
+        _currentUnitVal.value = randomUnitIndex
         val selectedUnit = selectedSection.units[randomUnitIndex]
 
         val flashcardCount = selectedUnit.flashcards.size
-        if (flashcardCount == 0) return null
+        if (flashcardCount == 0) return
 
         val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
         val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
         _currentFlashcard.value = selectedFlashcard
-
-        return Pair(randomSectionIndex, randomUnitIndex)
-    }
-
-
-
-
-
-    fun selectUnit(index: Int) {
-        _flashcardUnits.value?.let { units ->
-            if (index in units.indices) {
-                _currentUnit.value = units[index]
-                currentFlashcardIndex = 0
-                showFlashcard()
-            }
-        }
     }
 
     fun selectSection(index: Int) {
@@ -93,34 +83,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             if (units.isNotEmpty()) {
                 // Assigns the values of all the units
                 _flashcardUnits.value = units
-            }
-        }
-    }
-
-    private fun showFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showNextFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Increment the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.size
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showPrevFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Decrement the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.size) % flashcards.size
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
             }
         }
     }

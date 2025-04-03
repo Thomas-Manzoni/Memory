@@ -24,18 +24,22 @@ import kotlin.math.abs
 @Composable
 fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     val currentFlashcard by viewModel.currentFlashcard.observeAsState()
+    val currentSection by viewModel.currentSectionVal.observeAsState()
+    val currentUnit by viewModel.currentUnitVal.observeAsState()
 
-    val swipeThreshold = 600f // Distance required for a swipe to register
+    val swipeThreshold = 400f // Distance required for a swipe to register
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
     var randomSectionIndex by remember { mutableStateOf(-1) }
     var randomUnitIndex by remember { mutableStateOf(-1) }
+    var isDragging by remember { mutableStateOf(false) }
+
+    var flipped by remember { mutableStateOf(false) }
 
     // Animate swipe back to center when released
     val animatedSwipeOffset by animateFloatAsState(
-        targetValue = if (isSwiping) swipeOffset else 0f,
-        animationSpec = tween(durationMillis = 200),
-        label = "Swipe Animation"
+        targetValue = if (isDragging) swipeOffset else 0f, // Instantly follows drag, but animates back
+        animationSpec = tween(50)
     )
 
     // Reset the swipeOffset variable after animation completes
@@ -56,32 +60,22 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         // Flashcard Box with Swipe Gesture Detection
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.9f) // 90% of the screen width
-                .height(200.dp) // Adjust height as needed
-                .graphicsLayer(translationX = animatedSwipeOffset) // Move entire Box
+                .fillMaxWidth(0.9f)
+                .height(200.dp)
+                .graphicsLayer(translationX = animatedSwipeOffset) // Use animated offset only for reset
                 .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                 .pointerInput(Unit) {
                     detectDragGestures(
-                        onDragStart = { isSwiping = true },
+                        onDragStart = { isDragging = true },
                         onDrag = { change, dragAmount ->
-                            change.consume() // Consume gesture to prevent interference
-                            swipeOffset = if (swipeOffset * dragAmount.x < 0) {
-                                // If direction changes, reset the offset to the current delta.
-                                dragAmount.x
-                            } else {
-                                swipeOffset + dragAmount.x
-                            }
+                            change.consume()
+                            swipeOffset += dragAmount.x // Instant movement while dragging
                         },
                         onDragEnd = {
                             if (abs(swipeOffset) > swipeThreshold) {
-                                val result = viewModel.loadRandomFlashcard() // Get the returned values
-                                result?.let { (sectionIndex, unitIndex) ->
-                                    randomSectionIndex = sectionIndex + 1
-                                    randomUnitIndex = unitIndex + 1
-                                }
-                                swipeOffset = 0f // Reset immediately for new card
+                                viewModel.loadRandomFlashcard() // Get the returned values
                             }
-                            isSwiping = false // Allow animation to reset position
+                            isDragging = false // Triggers animation back to 0f
                         }
                     )
                 },
@@ -99,7 +93,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(60.dp))
 
         Text(
-            text = "Section: $randomSectionIndex  Unit: $randomUnitIndex",
+            text = "Section: ${currentSection?.plus(1)}  Unit: ${currentUnit?.plus(1)}",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             maxLines = 1,

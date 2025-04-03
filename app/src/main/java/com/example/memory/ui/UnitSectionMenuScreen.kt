@@ -6,14 +6,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.memory.viewmodel.FlashcardViewModel
 
 @Composable
-// Takes as input flashcardviewmodel and has a lambda function that takes an int and returns a unit
 fun UnitSelectionMenu(viewModel: FlashcardViewModel, onUnitSelected: (Int) -> Unit) {
     val flashcardUnits by viewModel.flashcardUnits.observeAsState(emptyList())
 
@@ -25,10 +22,10 @@ fun UnitSelectionMenu(viewModel: FlashcardViewModel, onUnitSelected: (Int) -> Un
         LazyColumn(modifier = Modifier.weight(1f)) {
             itemsIndexed(flashcardUnits) { index, unit ->
                 Button(
-                    onClick = { onUnitSelected(index) }, // Here is where the onUnitSelected is triggered : on the button press, then see main
+                    onClick = { onUnitSelected(index) },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
-                    Text(text = unit.unitName)
+                    Text(text = "Unit ${index + 1}: ${unit.unitName}") // Add 1 to index
                 }
             }
         }
