@@ -42,27 +42,29 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _flashcardSections.value = sections
     }
 
-    fun loadRandomFlashcard() {
-        val numberOfSections = _flashcardSections.value?.size ?: 0
-        if (numberOfSections == 0) return // Prevent crash if no sections exist
+    fun loadRandomFlashcard(): Pair<Int, Int>? {
+        //val numberOfSections = _flashcardSections.value?.size ?: 0
+        if (numberOfSections == 0) return null
 
-        val randomSectionIndex = Random.nextInt(0, numberOfSections) // Ensure valid index
-        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
+        val randomSectionIndex = Random.nextInt(0, numberOfSections)
+        val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return null
 
         val unitCount = selectedSection.units.size
-        if (unitCount == 0) return // Prevent crash if no units exist
+        if (unitCount == 0) return null
 
-        val randomUnitIndex = Random.nextInt(0, unitCount) // Ensure valid index
+        val randomUnitIndex = Random.nextInt(0, unitCount)
         val selectedUnit = selectedSection.units[randomUnitIndex]
 
-        // Now, count the flashcards (words) inside the selected unit
-        val flashcardCount = selectedUnit.flashcards.size // This gives the number of flashcards
-        if (flashcardCount == 0) return
+        val flashcardCount = selectedUnit.flashcards.size
+        if (flashcardCount == 0) return null
 
         val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
         val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
         _currentFlashcard.value = selectedFlashcard
+
+        return Pair(randomSectionIndex, randomUnitIndex)
     }
+
 
 
 
