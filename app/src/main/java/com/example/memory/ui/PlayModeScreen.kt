@@ -4,6 +4,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +60,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(120.dp))
 
         // Flashcard Box with Swipe Gesture Detection
+        // Flashcard Box with Swipe Gesture Detection and Clickable Box
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -78,17 +81,35 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                             isDragging = false // Triggers animation back to 0f
                         }
                     )
+                }
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() }, // Custom interaction source
+                    indication = null // Remove the default indication (no ripple effect)
+                ) {
+                    flipped = !flipped
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = currentFlashcard?.text ?: "Loading...",
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Visible
-            )
+
+            if (flipped) {
+                Text(
+                    text = currentFlashcard?.text ?: "Loading...",
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Visible
+                )
+            } else {
+                Text(
+                    text = currentFlashcard?.translations?.joinToString(", ") ?: "No translations",
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Visible
+                )
+            }
         }
+
 
         Spacer(modifier = Modifier.height(60.dp))
 
