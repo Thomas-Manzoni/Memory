@@ -63,8 +63,23 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.gson)
 
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    implementation(libs.room.compiler)
-    ksp("androidx.room:room-compiler:2.6.1")
+    implementation(libs.room.runtime) {
+        exclude(group = "com.intellij", module = "annotations")
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+    implementation(libs.room.ktx) {
+        exclude(group = "com.intellij", module = "annotations")
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+    implementation(libs.room.compiler){
+        exclude(group = "com.intellij", module = "annotations")
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
+    ksp(libs.room.compiler)
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains:annotations:23.0.0")
+    }
 }
