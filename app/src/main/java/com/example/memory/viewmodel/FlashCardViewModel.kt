@@ -72,7 +72,6 @@ class FlashcardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-
     private fun showFlashcard() {
         _currentUnit.value?.flashcards?.let { flashcards ->
             if (flashcards.isNotEmpty()) {
