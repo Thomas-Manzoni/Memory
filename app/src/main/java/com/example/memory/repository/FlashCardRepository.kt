@@ -14,7 +14,7 @@ class FlashcardRepository(private val context: Context) {
 
     fun loadFlashcardsFromJson(): List<FlashcardSection> {
         return try {
-            val jsonString = context.assets.open("units.json")
+            val jsonString = context.assets.open("flashcards_with_ids.json")
                 .bufferedReader().use { it.readText() }
 
             val type = object : TypeToken<Map<String, Map<String, List<Flashcard>>>>() {}.type
