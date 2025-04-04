@@ -4,6 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import com.example.memory.data.database.DatabaseProvider
+import com.example.memory.data.entity.FlashcardInsight
 import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
@@ -36,6 +40,36 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     private var numberOfSections = 2
 
+    // Database stuff ----------------------------------------
+    private val db = DatabaseProvider.getDatabase(application.applicationContext)
+    private val insightDao = db.flashcardInsightDao()
+
+    // I think it's an example of the function
+    fun updateCorrectAnswer(flashcardId: String) {
+        viewModelScope.launch {
+            val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
+            val updatedInsight = currentInsight.copy(
+                timesReviewed = currentInsight.timesReviewed + 1,
+                timesCorrect = currentInsight.timesCorrect + 1,
+                lastReviewed = System.currentTimeMillis()
+            )
+            insightDao.insertInsight(updatedInsight)
+        }
+    }
+
+    fun updateWrongAnswer(flashcardId: String) {
+        viewModelScope.launch {
+            val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
+            val updatedInsight = currentInsight.copy(
+                timesReviewed = currentInsight.timesReviewed + 1,
+                timesCorrect = currentInsight.timesCorrect - 1,
+                lastReviewed = System.currentTimeMillis()
+            )
+            insightDao.insertInsight(updatedInsight)
+        }
+    }
+    // -----------------------------------------------------------------------
+
     init {
         loadFlashcardRepo()
         loadRandomFlashcard()
@@ -67,23 +101,5 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
         val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
         _currentFlashcard.value = selectedFlashcard
-    }
-
-    fun selectSection(index: Int) {
-        _flashcardSections.value?.let { units ->
-            if (index in units.indices) {
-                _currentSection.value = units[index]
-                showUnits()
-            }
-        }
-    }
-
-    private fun showUnits() {
-        _currentSection.value?.units?.let { units ->
-            if (units.isNotEmpty()) {
-                // Assigns the values of all the units
-                _flashcardUnits.value = units
-            }
-        }
     }
 }

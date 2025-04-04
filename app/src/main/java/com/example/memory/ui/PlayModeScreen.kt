@@ -34,6 +34,8 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     var isSwiping by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) }
 
+    var cardId by remember { mutableStateOf("") }
+
     var flipped by remember { mutableStateOf(false) }
 
     // Animate swipe back to center when released
@@ -72,7 +74,14 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                             swipeOffset += dragAmount.x // Instant movement while dragging
                         },
                         onDragEnd = {
-                            if (abs(swipeOffset) > swipeThreshold) {
+                            if (swipeOffset > swipeThreshold) {
+                                cardId = currentFlashcard?.wordId.toString()
+                                viewModel.updateCorrectAnswer(flashcardId = cardId)
+                                viewModel.loadRandomFlashcard() // Get the returned values
+                            }
+                            else if(swipeOffset < -swipeThreshold) {
+                                cardId = currentFlashcard?.wordId.toString()
+                                viewModel.updateWrongAnswer(flashcardId = cardId)
                                 viewModel.loadRandomFlashcard() // Get the returned values
                             }
                             isDragging = false // Triggers animation back to 0f
