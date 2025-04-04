@@ -32,9 +32,9 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     val swipeThreshold = 400f // Distance required for a swipe to register
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
-    var randomSectionIndex by remember { mutableStateOf(-1) }
-    var randomUnitIndex by remember { mutableStateOf(-1) }
     var isDragging by remember { mutableStateOf(false) }
+
+    var cardId by remember { mutableStateOf("") }
 
     var flipped by remember { mutableStateOf(false) }
 
@@ -59,7 +59,6 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     ) {
         Spacer(modifier = Modifier.height(120.dp))
 
-        // Flashcard Box with Swipe Gesture Detection
         // Flashcard Box with Swipe Gesture Detection and Clickable Box
         Box(
             modifier = Modifier
@@ -75,7 +74,14 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                             swipeOffset += dragAmount.x // Instant movement while dragging
                         },
                         onDragEnd = {
-                            if (abs(swipeOffset) > swipeThreshold) {
+                            if (swipeOffset > swipeThreshold) {
+                                cardId = currentFlashcard?.wordId.toString()
+                                viewModel.updateCorrectAnswer(flashcardId = cardId)
+                                viewModel.loadRandomFlashcard() // Get the returned values
+                            }
+                            else if(swipeOffset < -swipeThreshold) {
+                                cardId = currentFlashcard?.wordId.toString()
+                                viewModel.updateWrongAnswer(flashcardId = cardId)
                                 viewModel.loadRandomFlashcard() // Get the returned values
                             }
                             isDragging = false // Triggers animation back to 0f
@@ -109,7 +115,6 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                 )
             }
         }
-
 
         Spacer(modifier = Modifier.height(60.dp))
 
