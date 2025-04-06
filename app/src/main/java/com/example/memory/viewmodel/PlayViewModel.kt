@@ -102,4 +102,23 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
         _currentFlashcard.value = selectedFlashcard
     }
+
+    fun selectSection(index: Int) {
+        _flashcardSections.value?.let { units ->
+            if (index in units.indices) {
+                _currentSection.value = units[index]
+                showUnits()
+            }
+        }
+    }
+    private fun showUnits() {
+        _currentSection.value?.units?.let { units ->
+            if (units.isNotEmpty()) {
+                // Assigns the values of all the units
+                _flashcardUnits.value = units
+            }
+        }
+    }
+
+    // Add variable for pre selected section and unit and perform randomness only if these are not selected
 }

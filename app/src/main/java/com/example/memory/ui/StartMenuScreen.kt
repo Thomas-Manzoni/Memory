@@ -30,7 +30,7 @@ fun StartMenu(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navController.navigate("play_mode") },
+            onClick = { navController.navigate("play_options_menu") },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Text(text = "Play")
@@ -43,6 +43,37 @@ fun StartMenu(navController: NavController) {
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Text(text = "Exercise")
+        }
+    }
+}
+
+@Composable
+fun PlayOptionsMenu(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Do you want to select a specific section?", style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { navController.navigate("section_selection_play") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Select section")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { navController.navigate("play_mode") },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Play with all cards")
         }
     }
 }

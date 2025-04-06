@@ -833,192 +833,219 @@
         ],
         "Talk about possessions": [
             {
-                "text": "barn",
+                "text": "behöver",
                 "translations": [
-                    "children",
-                    "kid",
-                    "child",
-                    "kids"
+                    "need",
+                    "do ... need",
+                    "needs",
+                    "does ... need"
                 ],
-                "wordId": "a8c291bd"
+                "wordId": "53ed77ad"
             },
             {
-                "text": "deras",
+                "text": "bil",
                 "translations": [
-                    "their",
-                    "theirs"
+                    "car"
                 ],
-                "wordId": "8c972e94"
+                "wordId": "16c34f94"
             },
             {
-                "text": "dina",
+                "text": "bor",
+                "translations": [
+                    "does ... live",
+                    "live",
+                    "do ... live",
+                    "am/is/are living",
+                    "lives"
+                ],
+                "wordId": "4f6e73e3"
+            },
+            {
+                "text": "bord",
+                "translations": [
+                    "table",
+                    "tables"
+                ],
+                "wordId": "fa0574b0"
+            },
+            {
+                "text": "cykel",
+                "translations": [
+                    "bicycle",
+                    "bike"
+                ],
+                "wordId": "5db84cd1"
+            },
+            {
+                "text": "dator",
+                "translations": [
+                    "computer"
+                ],
+                "wordId": "c211111c"
+            },
+            {
+                "text": "ditt",
                 "translations": [
                     "your",
                     "yours"
                 ],
-                "wordId": "f06539b9"
+                "wordId": "66921eb0"
             },
             {
-                "text": "er",
+                "text": "där",
                 "translations": [
-                    "your",
-                    "yours",
-                    "you"
+                    "there"
                 ],
-                "wordId": "56b34f8e"
+                "wordId": "36d856c9"
             },
             {
-                "text": "era",
+                "text": "eller hur",
                 "translations": [
-                    "your",
-                    "yours"
+                    "right"
                 ],
-                "wordId": "28a92216"
+                "wordId": "8477ce17"
             },
             {
-                "text": "ert",
+                "text": "göra",
                 "translations": [
-                    "your",
-                    "yours"
+                    "do",
+                    "make"
                 ],
-                "wordId": "fda03404"
+                "wordId": "440f3eb9"
             },
             {
-                "text": "flicka",
+                "text": "hemma",
                 "translations": [
-                    "girl"
+                    "at home",
+                    "home"
                 ],
-                "wordId": "d0d66559"
+                "wordId": "9f362b6a"
             },
             {
-                "text": "hans",
+                "text": "hus",
                 "translations": [
-                    "his",
-                    "Hans'",
-                    "Hans's"
+                    "house"
                 ],
-                "wordId": "4f5e75b3"
+                "wordId": "670b155b"
             },
             {
-                "text": "hennes",
+                "text": "här",
                 "translations": [
-                    "her",
-                    "hers"
+                    "here"
                 ],
-                "wordId": "25b5167f"
+                "wordId": "8bd6c87b"
             },
             {
-                "text": "hund",
+                "text": "i centrum",
                 "translations": [
-                    "dog"
+                    "downtown"
                 ],
-                "wordId": "47799f74"
+                "wordId": "4d94a5b7"
             },
             {
-                "text": "katt",
+                "text": "kylskåp",
                 "translations": [
-                    "cat"
+                    "refrigerator"
                 ],
-                "wordId": "c2df06d5"
+                "wordId": "dd285a97"
             },
             {
-                "text": "kock",
+                "text": "liten",
                 "translations": [
-                    "cook"
+                    "small"
                 ],
-                "wordId": "6162f73d"
+                "wordId": "c8d7afff"
             },
             {
-                "text": "kvinna",
+                "text": "lägenhet",
                 "translations": [
-                    "woman"
+                    "apartment"
                 ],
-                "wordId": "7c804317"
+                "wordId": "f0bfe704"
             },
             {
-                "text": "man",
+                "text": "mobil",
                 "translations": [
-                    "one",
-                    "you",
-                    "husband",
-                    "man",
-                    "they"
+                    "cell phone"
                 ],
-                "wordId": "31adb94d"
+                "wordId": "d5044f76"
             },
             {
-                "text": "mina",
+                "text": "ny",
                 "translations": [
-                    "my",
-                    "mine"
+                    "new"
                 ],
-                "wordId": "35711f15"
+                "wordId": "0e40fea7"
             },
             {
-                "text": "pojke",
+                "text": "rum",
                 "translations": [
-                    "boy"
+                    "room"
                 ],
-                "wordId": "d31584b2"
+                "wordId": "5161a3e4"
             },
             {
-                "text": "restaurang",
+                "text": "skrivbord",
                 "translations": [
-                    "restaurant"
+                    "desk"
                 ],
-                "wordId": "1da1988a"
+                "wordId": "928c2f1d"
             },
             {
-                "text": "sin",
+                "text": "stad",
                 "translations": [
-                    "her / his / its /their (own)"
+                    "city"
                 ],
-                "wordId": "5c96852f"
+                "wordId": "29e99c32"
             },
             {
-                "text": "sina",
+                "text": "stor",
                 "translations": [
-                    "his (own)",
-                    "one's (own)",
-                    "her (own)",
-                    "their (own)"
+                    "big"
                 ],
-                "wordId": "71d8c248"
+                "wordId": "1c313cf6"
             },
             {
-                "text": "sitt",
+                "text": "säng",
                 "translations": [
-                    "his (own)",
-                    "its (own)",
-                    "her (own)",
-                    "their (own)"
+                    "bed"
                 ],
-                "wordId": "33540cea"
+                "wordId": "c59a6c9a"
             },
             {
-                "text": "vår",
+                "text": "tv",
                 "translations": [
-                    "spring",
-                    "our",
-                    "ours"
+                    "television",
+                    "TV"
                 ],
-                "wordId": "3b6fd173"
+                "wordId": "3c937471"
             },
             {
-                "text": "våra",
+                "text": "tänker",
                 "translations": [
-                    "our",
-                    "ours"
+                    "intend to",
+                    "plan",
+                    "thinking",
+                    "thinks",
+                    "plans",
+                    "think",
+                    "(am, are, is) planning to"
                 ],
-                "wordId": "bb6fd14a"
+                "wordId": "c6d63a8c"
             },
             {
-                "text": "vårt",
+                "text": "vi",
                 "translations": [
-                    "our",
-                    "ours"
+                    "we"
                 ],
-                "wordId": "20e5c86c"
+                "wordId": "e753f065"
+            },
+            {
+                "text": "äger",
+                "translations": [
+                    "own"
+                ],
+                "wordId": "8411a21e"
             }
         ],
         "Discuss hobbies": [
@@ -1258,18 +1285,50 @@
         ],
         "Describe animals": [
             {
-                "text": "anka",
+                "text": "ande",
                 "translations": [
-                    "duck"
+                    "ghost",
+                    "spirit",
+                    "genie"
                 ],
-                "wordId": "54a9d0ff"
+                "wordId": "439130bd"
             },
             {
-                "text": "ankan",
+                "text": "bi",
                 "translations": [
-                    "the duck"
+                    "bee"
                 ],
-                "wordId": "b18e5a88"
+                "wordId": "84691342"
+            },
+            {
+                "text": "biet",
+                "translations": [
+                    "the bee"
+                ],
+                "wordId": "34737127"
+            },
+            {
+                "text": "bjuda",
+                "translations": [
+                    "invite",
+                    "treat"
+                ],
+                "wordId": "8b7949fc"
+            },
+            {
+                "text": "björn",
+                "translations": [
+                    "bear",
+                    "Björn"
+                ],
+                "wordId": "0bb0a7e3"
+            },
+            {
+                "text": "björnen",
+                "translations": [
+                    "the bear"
+                ],
+                "wordId": "05843dcb"
             },
             {
                 "text": "djur",
@@ -1280,132 +1339,199 @@
                 "wordId": "bc520f68"
             },
             {
-                "text": "djuret",
+                "text": "elefant",
                 "translations": [
-                    "the animal"
+                    "elephant"
                 ],
-                "wordId": "09760103"
+                "wordId": "ba386a42"
             },
             {
-                "text": "fågel",
+                "text": "elefanten",
                 "translations": [
-                    "bird"
+                    "the elephant"
                 ],
-                "wordId": "e3b91aec"
+                "wordId": "40f7e213"
             },
             {
-                "text": "fågeln",
+                "text": "flodhäst",
                 "translations": [
-                    "the bird"
+                    "hippo"
                 ],
-                "wordId": "6b9ff9ee"
+                "wordId": "9845dffd"
             },
             {
-                "text": "hunden",
+                "text": "flodhästen",
                 "translations": [
-                    "the dog"
+                    "the hippo"
                 ],
-                "wordId": "1a68e317"
+                "wordId": "27f08c04"
             },
             {
-                "text": "häst",
+                "text": "får",
                 "translations": [
-                    "horse"
+                    "be allowed to",
+                    "have to",
+                    "can",
+                    "may",
+                    "get",
+                    "gets",
+                    "receive",
+                    "receiving",
+                    "sheep",
+                    "receives",
+                    "beget",
+                    "are allowed to"
                 ],
-                "wordId": "ba1d3576"
+                "wordId": "3df345d9"
             },
             {
-                "text": "hästen",
+                "text": "fåret",
                 "translations": [
-                    "the horse"
+                    "the sheep"
                 ],
-                "wordId": "322bb1a4"
+                "wordId": "8de85b5b"
             },
             {
-                "text": "katten",
+                "text": "husdjur",
                 "translations": [
-                    "the cat"
+                    "pet"
                 ],
-                "wordId": "85a4a951"
+                "wordId": "68010c7d"
             },
             {
-                "text": "krabba",
+                "text": "husdjuret",
                 "translations": [
-                    "crab"
+                    "the pet"
                 ],
-                "wordId": "b5b52534"
+                "wordId": "804d3ab7"
             },
             {
-                "text": "krabban",
+                "text": "häftigt",
                 "translations": [
-                    "the crab"
+                    "cool"
                 ],
-                "wordId": "cf853589"
+                "wordId": "a0c660fb"
             },
             {
-                "text": "mus",
+                "text": "kolla",
                 "translations": [
-                    "mouse"
+                    "look"
                 ],
-                "wordId": "59f01096"
+                "wordId": "21a17b6a"
             },
             {
-                "text": "myra",
+                "text": "lejon",
                 "translations": [
-                    "ant"
+                    "lion",
+                    "lions"
                 ],
-                "wordId": "955cdebf"
+                "wordId": "d277cf4d"
             },
             {
-                "text": "sköldpadda",
+                "text": "lejonet",
                 "translations": [
-                    "turtle",
-                    "tortoise"
+                    "the lion"
                 ],
-                "wordId": "0666c96c"
+                "wordId": "bd16118c"
             },
             {
-                "text": "sköldpaddan",
+                "text": "nej",
                 "translations": [
-                    "the turtle",
-                    "the tortoise"
+                    "no"
                 ],
-                "wordId": "4de117d9"
+                "wordId": "424b7f2f"
             },
             {
-                "text": "spindel",
+                "text": "och",
                 "translations": [
-                    "spider"
+                    "and"
                 ],
-                "wordId": "5e55628a"
+                "wordId": "0b3449f8"
             },
             {
-                "text": "spindeln",
+                "text": "pingvin",
                 "translations": [
-                    "the spider"
+                    "penguin"
                 ],
-                "wordId": "a1451f03"
+                "wordId": "23568b84"
             },
             {
-                "text": "varg",
+                "text": "pingvinen",
                 "translations": [
-                    "wolf"
+                    "the penguin"
                 ],
-                "wordId": "f96b0473"
+                "wordId": "943a988d"
             },
             {
-                "text": "älg",
+                "text": "ren",
                 "translations": [
-                    "moose"
+                    "reindeer",
+                    "clean",
+                    "pure"
                 ],
-                "wordId": "d3578fb7"
+                "wordId": "dce8f638"
             },
             {
-                "text": "älgen",
+                "text": "renen",
                 "translations": [
-                    "the moose"
+                    "the reindeer"
                 ],
-                "wordId": "63a8b544"
+                "wordId": "419743d1"
+            },
+            {
+                "text": "rådjur",
+                "translations": [
+                    "deer"
+                ],
+                "wordId": "ab805ca6"
+            },
+            {
+                "text": "rådjuret",
+                "translations": [
+                    "the deer"
+                ],
+                "wordId": "75b26796"
+            },
+            {
+                "text": "ser",
+                "translations": [
+                    "see",
+                    "do ... see",
+                    "are seeing",
+                    "am seeing",
+                    "sees",
+                    "does ... see"
+                ],
+                "wordId": "bd50ee40"
+            },
+            {
+                "text": "sked",
+                "translations": [
+                    "spoon"
+                ],
+                "wordId": "59eb5709"
+            },
+            {
+                "text": "skratta",
+                "translations": [
+                    "laugh",
+                    "laughing"
+                ],
+                "wordId": "7f195fcf"
+            },
+            {
+                "text": "skrämmande",
+                "translations": [
+                    "scary"
+                ],
+                "wordId": "afca79bb"
+            },
+            {
+                "text": "tyst",
+                "translations": [
+                    "quiet"
+                ],
+                "wordId": "78fc4db5"
             }
         ],
         "Form questions": [
@@ -2363,6 +2489,158 @@
                 "wordId": "3815f24a"
             }
         ],
+        "Describe animals 2": [
+            {
+                "text": "anka",
+                "translations": [
+                    "duck"
+                ],
+                "wordId": "0dfc14fc"
+            },
+            {
+                "text": "ankan",
+                "translations": [
+                    "the duck"
+                ],
+                "wordId": "5ea09dc7"
+            },
+            {
+                "text": "djur",
+                "translations": [
+                    "animal",
+                    "animals"
+                ],
+                "wordId": "8f1ada03"
+            },
+            {
+                "text": "djuret",
+                "translations": [
+                    "the animal"
+                ],
+                "wordId": "17b5d5cb"
+            },
+            {
+                "text": "fågel",
+                "translations": [
+                    "bird"
+                ],
+                "wordId": "3d308b54"
+            },
+            {
+                "text": "fågeln",
+                "translations": [
+                    "the bird"
+                ],
+                "wordId": "50194ac6"
+            },
+            {
+                "text": "hunden",
+                "translations": [
+                    "the dog"
+                ],
+                "wordId": "16cdf268"
+            },
+            {
+                "text": "häst",
+                "translations": [
+                    "horse"
+                ],
+                "wordId": "5668a4de"
+            },
+            {
+                "text": "hästen",
+                "translations": [
+                    "the horse"
+                ],
+                "wordId": "192c7849"
+            },
+            {
+                "text": "katten",
+                "translations": [
+                    "the cat"
+                ],
+                "wordId": "7e0a0a6f"
+            },
+            {
+                "text": "krabba",
+                "translations": [
+                    "crab"
+                ],
+                "wordId": "e342d8e9"
+            },
+            {
+                "text": "krabban",
+                "translations": [
+                    "the crab"
+                ],
+                "wordId": "a3d74682"
+            },
+            {
+                "text": "mus",
+                "translations": [
+                    "mouse"
+                ],
+                "wordId": "695fcb19"
+            },
+            {
+                "text": "myra",
+                "translations": [
+                    "ant"
+                ],
+                "wordId": "c8b87cc3"
+            },
+            {
+                "text": "sköldpadda",
+                "translations": [
+                    "turtle",
+                    "tortoise"
+                ],
+                "wordId": "84124f61"
+            },
+            {
+                "text": "sköldpaddan",
+                "translations": [
+                    "the turtle",
+                    "the tortoise"
+                ],
+                "wordId": "e902b2d1"
+            },
+            {
+                "text": "spindel",
+                "translations": [
+                    "spider"
+                ],
+                "wordId": "feaada01"
+            },
+            {
+                "text": "spindeln",
+                "translations": [
+                    "the spider"
+                ],
+                "wordId": "71accce6"
+            },
+            {
+                "text": "varg",
+                "translations": [
+                    "wolf"
+                ],
+                "wordId": "c7ff45ce"
+            },
+            {
+                "text": "älg",
+                "translations": [
+                    "moose"
+                ],
+                "wordId": "3f392ad2"
+            },
+            {
+                "text": "älgen",
+                "translations": [
+                    "the moose"
+                ],
+                "wordId": "f8d2bf69"
+            }
+        ],
         "Use definite nouns": [
             {
                 "text": "apelsinen",
@@ -2904,6 +3182,196 @@
                 ],
                 "wordId": "7ad2cec2"
             }
+        ],
+        "Talk about possessions 2": [
+            {
+                "text": "barn",
+                "translations": [
+                    "children",
+                    "kid",
+                    "child",
+                    "kids"
+                ],
+                "wordId": "54aa60dd"
+            },
+            {
+                "text": "deras",
+                "translations": [
+                    "their",
+                    "theirs"
+                ],
+                "wordId": "82fbea08"
+            },
+            {
+                "text": "dina",
+                "translations": [
+                    "your",
+                    "yours"
+                ],
+                "wordId": "dc54b2e1"
+            },
+            {
+                "text": "er",
+                "translations": [
+                    "your",
+                    "yours",
+                    "you"
+                ],
+                "wordId": "1eb16901"
+            },
+            {
+                "text": "era",
+                "translations": [
+                    "your",
+                    "yours"
+                ],
+                "wordId": "599d1a51"
+            },
+            {
+                "text": "ert",
+                "translations": [
+                    "your",
+                    "yours"
+                ],
+                "wordId": "ebde1a68"
+            },
+            {
+                "text": "flicka",
+                "translations": [
+                    "girl"
+                ],
+                "wordId": "4bff46ab"
+            },
+            {
+                "text": "hans",
+                "translations": [
+                    "his",
+                    "Hans'",
+                    "Hans's"
+                ],
+                "wordId": "88158e37"
+            },
+            {
+                "text": "hennes",
+                "translations": [
+                    "her",
+                    "hers"
+                ],
+                "wordId": "629dbf39"
+            },
+            {
+                "text": "hund",
+                "translations": [
+                    "dog"
+                ],
+                "wordId": "6d4274e5"
+            },
+            {
+                "text": "katt",
+                "translations": [
+                    "cat"
+                ],
+                "wordId": "6b83e22e"
+            },
+            {
+                "text": "kock",
+                "translations": [
+                    "cook"
+                ],
+                "wordId": "5a258f9d"
+            },
+            {
+                "text": "kvinna",
+                "translations": [
+                    "woman"
+                ],
+                "wordId": "e13fe5e9"
+            },
+            {
+                "text": "man",
+                "translations": [
+                    "one",
+                    "you",
+                    "husband",
+                    "man",
+                    "they"
+                ],
+                "wordId": "081c0f20"
+            },
+            {
+                "text": "mina",
+                "translations": [
+                    "my",
+                    "mine"
+                ],
+                "wordId": "42311124"
+            },
+            {
+                "text": "pojke",
+                "translations": [
+                    "boy"
+                ],
+                "wordId": "1615bb11"
+            },
+            {
+                "text": "restaurang",
+                "translations": [
+                    "restaurant"
+                ],
+                "wordId": "4c1f9d70"
+            },
+            {
+                "text": "sin",
+                "translations": [
+                    "her / his / its /their (own)"
+                ],
+                "wordId": "4d9137f5"
+            },
+            {
+                "text": "sina",
+                "translations": [
+                    "his (own)",
+                    "one's (own)",
+                    "her (own)",
+                    "their (own)"
+                ],
+                "wordId": "453fa2f8"
+            },
+            {
+                "text": "sitt",
+                "translations": [
+                    "his (own)",
+                    "its (own)",
+                    "her (own)",
+                    "their (own)"
+                ],
+                "wordId": "722d5b40"
+            },
+            {
+                "text": "vår",
+                "translations": [
+                    "spring",
+                    "our",
+                    "ours"
+                ],
+                "wordId": "64ce1cc3"
+            },
+            {
+                "text": "våra",
+                "translations": [
+                    "our",
+                    "ours"
+                ],
+                "wordId": "993a1b95"
+            },
+            {
+                "text": "vårt",
+                "translations": [
+                    "our",
+                    "ours"
+                ],
+                "wordId": "4a8c80ab"
+            }
         ]
     },
     "Section 2": {
@@ -3144,389 +3612,402 @@
         ],
         "Use the present tense": [
             {
-                "text": "bjuder",
+                "text": "använder",
                 "translations": [
-                    "offer",
-                    "offers"
+                    "use",
+                    "uses",
+                    "am using",
+                    "are using",
+                    "is using"
                 ],
-                "wordId": "84f2c0f1"
+                "wordId": "6c51aabd"
             },
             {
-                "text": "bor",
+                "text": "betalar",
                 "translations": [
-                    "does ... live",
-                    "live",
-                    "do ... live",
-                    "am/is/are living",
-                    "lives"
+                    "pay",
+                    "am paying",
+                    "are paying",
+                    "is paying",
+                    "pays"
                 ],
-                "wordId": "180039ff"
+                "wordId": "b21feca3"
             },
             {
-                "text": "börjar",
+                "text": "finns",
                 "translations": [
-                    "starts",
-                    "begins",
-                    "start",
-                    "begin"
+                    "there is / are",
+                    "exist",
+                    "exists"
                 ],
-                "wordId": "b1b3242a"
+                "wordId": "e1ee9796"
             },
             {
-                "text": "fryser",
+                "text": "flyger",
                 "translations": [
-                    "(am/are/is) cold",
-                    "am freezing",
-                    "freeze",
-                    "will freeze",
-                    "freezing"
+                    "fly",
+                    "flies",
+                    "(am, are, is) flying"
                 ],
-                "wordId": "00b1d0b2"
+                "wordId": "93206889"
             },
             {
-                "text": "får",
+                "text": "gråter",
                 "translations": [
-                    "get",
-                    "sheep",
-                    "may",
-                    "be allowed to",
-                    "can",
-                    "gets",
-                    "have to",
-                    "receive",
-                    "receives",
-                    "receiving"
+                    "crying",
+                    "is crying",
+                    "cry",
+                    "am crying",
+                    "are crying",
+                    "cries"
                 ],
-                "wordId": "ec4e27d0"
+                "wordId": "dfa990b0"
             },
             {
-                "text": "följer",
+                "text": "går",
                 "translations": [
-                    "following",
-                    "follow",
-                    "follows"
+                    "go",
+                    "is going",
+                    "walk",
+                    "am going",
+                    "am walking",
+                    "are going",
+                    "are walking",
+                    "go (by foot)",
+                    "goes",
+                    "is walking",
+                    "leave",
+                    "leaves",
+                    "walks"
                 ],
-                "wordId": "6e88dd73"
+                "wordId": "af3239f0"
             },
             {
-                "text": "försöker",
+                "text": "ha",
                 "translations": [
-                    "tries",
-                    "try"
+                    "wants",
+                    "have"
                 ],
-                "wordId": "48bc6798"
+                "wordId": "8abf95f8"
             },
             {
-                "text": "ger",
+                "text": "hittar",
                 "translations": [
-                    "gives",
-                    "give",
-                    "giving"
+                    "find",
+                    "finds"
                 ],
-                "wordId": "99d462b9"
+                "wordId": "26115a9a"
             },
             {
-                "text": "hinner",
+                "text": "hoppar",
                 "translations": [
-                    "make it in time",
-                    "have enough time"
+                    "jump",
+                    "jumps",
+                    "am jumping",
+                    "are jumping",
+                    "is jumping"
                 ],
-                "wordId": "c9905806"
+                "wordId": "1fe39d00"
             },
             {
-                "text": "hjälper",
+                "text": "hör",
                 "translations": [
-                    "helps",
-                    "help",
-                    "helping"
+                    "hear",
+                    "do ... hear",
+                    "hears",
+                    "are hearing",
+                    "am hearing",
+                    "is hearing",
+                    "does ... hear"
                 ],
-                "wordId": "f7f65039"
+                "wordId": "55f2fc34"
             },
             {
-                "text": "håller",
+                "text": "kommer",
                 "translations": [
-                    "holding",
-                    "keep",
-                    "hold",
-                    "holds"
+                    "come",
+                    "do ... come",
+                    "does ... come",
+                    "is coming",
+                    "comes",
+                    "coming",
+                    "are coming",
+                    "am coming",
+                    "will come"
                 ],
-                "wordId": "1d8a9582"
+                "wordId": "a56045b3"
             },
             {
-                "text": "kramar",
+                "text": "köper",
                 "translations": [
-                    "hugs",
-                    "hug"
+                    "am buying",
+                    "buy",
+                    "is buying",
+                    "buys",
+                    "are buying",
+                    "buying"
                 ],
-                "wordId": "d8aa90b6"
+                "wordId": "de6c5ab8"
             },
             {
-                "text": "kysser",
+                "text": "lagar",
                 "translations": [
-                    "kiss",
-                    "kissing",
-                    "kisses"
+                    "repairs",
+                    "cooks",
+                    "are repairing",
+                    "is cooking",
+                    "cook",
+                    "am cooking",
+                    "are cooking",
+                    "fix",
+                    "is repairing",
+                    "laws"
                 ],
-                "wordId": "2c6e39ab"
+                "wordId": "d6425b82"
             },
             {
-                "text": "känner",
+                "text": "leker",
                 "translations": [
-                    "know",
-                    "feel",
-                    "knows"
+                    "play",
+                    "plays",
+                    "am playing",
+                    "is playing",
+                    "are playing",
+                    "playing"
                 ],
-                "wordId": "77b45270"
+                "wordId": "490d5f13"
             },
             {
-                "text": "letar",
+                "text": "lyssnar",
                 "translations": [
-                    "searching",
-                    "look",
-                    "looks",
-                    "search",
-                    "searches"
+                    "is listening",
+                    "listen",
+                    "are listening",
+                    "listens",
+                    "am listening"
                 ],
-                "wordId": "89176cc4"
+                "wordId": "36605348"
             },
             {
-                "text": "lever",
+                "text": "pratar",
                 "translations": [
-                    "live",
-                    "lives",
-                    "living"
+                    "speaks",
+                    "am talking",
+                    "are talking",
+                    "speak",
+                    "does ... speak",
+                    "talking",
+                    "talks",
+                    "are speaking",
+                    "is speaking",
+                    "talk",
+                    "am speaking",
+                    "is talking",
+                    "do ... speak",
+                    "speaking"
                 ],
-                "wordId": "a632e194"
+                "wordId": "2169aad1"
             },
             {
-                "text": "ligger",
+                "text": "regnar",
+                "translations": [
+                    "rains",
+                    "is raining",
+                    "rain"
+                ],
+                "wordId": "396ebbfe"
+            },
+            {
+                "text": "ritar",
+                "translations": [
+                    "draws",
+                    "draw",
+                    "is drawing",
+                    "am drawing",
+                    "are drawing"
+                ],
+                "wordId": "bf0c91b1"
+            },
+            {
+                "text": "sitter",
+                "translations": [
+                    "sitting",
+                    "are sitting",
+                    "is sitting",
+                    "am sitting",
+                    "sit",
+                    "is",
+                    "sits",
+                    "are sitting there"
+                ],
+                "wordId": "db0bbb24"
+            },
+            {
+                "text": "sjunger",
+                "translations": [
+                    "singing",
+                    "sing",
+                    "sings",
+                    "am singing",
+                    "are singing",
+                    "is singing"
+                ],
+                "wordId": "0c314747"
+            },
+            {
+                "text": "skrattar",
+                "translations": [
+                    "laugh",
+                    "are laughing",
+                    "laughs",
+                    "am laughing",
+                    "is laughing"
+                ],
+                "wordId": "78b89a7b"
+            },
+            {
+                "text": "skriver",
+                "translations": [
+                    "write",
+                    "are writing",
+                    "is writing",
+                    "is typing",
+                    "writes",
+                    "am writing",
+                    "do write"
+                ],
+                "wordId": "d3fd2fd1"
+            },
+            {
+                "text": "sover",
+                "translations": [
+                    "sleep",
+                    "do ... sleep",
+                    "sleeping",
+                    "are sleeping",
+                    "is sleeping",
+                    "am sleeping",
+                    "sleeps",
+                    "does ... sleep"
+                ],
+                "wordId": "57e8f711"
+            },
+            {
+                "text": "springer",
+                "translations": [
+                    "run",
+                    "runs",
+                    "running",
+                    "am running",
+                    "are running",
+                    "is running"
+                ],
+                "wordId": "a50ad86b"
+            },
+            {
+                "text": "står",
                 "translations": [
                     "is",
-                    "is located",
-                    "is situated",
-                    "am/are/is lying",
-                    "lie down",
-                    "lie/lies",
-                    "lying down"
+                    "stand",
+                    "is standing",
+                    "stands",
+                    "are standing",
+                    "am standing",
+                    "standing",
+                    "are"
                 ],
-                "wordId": "8f743a99"
+                "wordId": "e699a3dc"
             },
             {
-                "text": "litar",
+                "text": "stöttar",
                 "translations": [
-                    "trust"
+                    "supports",
+                    "support",
+                    "is supporting"
                 ],
-                "wordId": "13ac8cd1"
+                "wordId": "8f30a8c6"
             },
             {
-                "text": "lär",
+                "text": "säljer",
                 "translations": [
-                    "learn",
-                    "teaches",
-                    "teach",
-                    "teaching"
+                    "sell",
+                    "are selling",
+                    "is selling",
+                    "am selling",
+                    "sells",
+                    "do ... sell"
                 ],
-                "wordId": "47e56101"
+                "wordId": "1f060fe3"
             },
             {
-                "text": "orkar",
+                "text": "tar",
                 "translations": [
-                    "have enough energy"
+                    "takes",
+                    "take",
+                    "is taking",
+                    "am taking",
+                    "are taking"
                 ],
-                "wordId": "ac5df674"
+                "wordId": "611863ab"
             },
             {
-                "text": "passerar",
+                "text": "tvättar",
                 "translations": [
-                    "passing",
-                    "passes",
-                    "pass"
+                    "wash",
+                    "is washing",
+                    "are washing",
+                    "washes",
+                    "am washing",
+                    "do...wash"
                 ],
-                "wordId": "04fea210"
+                "wordId": "454704fb"
             },
             {
-                "text": "presenterar",
+                "text": "vill",
                 "translations": [
-                    "presents",
-                    "present",
-                    "introduces",
-                    "introduce"
+                    "want",
+                    "want to",
+                    "do ... want",
+                    "wants",
+                    "wants to",
+                    "does ... want"
                 ],
-                "wordId": "927fc83e"
+                "wordId": "adf310e6"
             },
             {
-                "text": "ringer",
+                "text": "visar",
                 "translations": [
-                    "calls",
-                    "ringing",
-                    "call",
-                    "is calling"
+                    "shows",
+                    "is showing",
+                    "am showing",
+                    "show",
+                    "are showing"
                 ],
-                "wordId": "582533e6"
+                "wordId": "25df7880"
             },
             {
-                "text": "räcker",
+                "text": "väljer",
                 "translations": [
-                    "is enough",
-                    "are enough",
-                    "suffice",
-                    "suffices"
+                    "chooses",
+                    "is choosing",
+                    "are choosing",
+                    "am choosing",
+                    "choose"
                 ],
-                "wordId": "3f4fe741"
+                "wordId": "ed216f19"
             },
             {
-                "text": "räddar",
+                "text": "åker",
                 "translations": [
-                    "saves",
-                    "rescues",
-                    "saving",
-                    "save"
+                    "go",
+                    "are going",
+                    "is going",
+                    "am going",
+                    "go (by means of transportation)",
+                    "goes",
+                    "leave"
                 ],
-                "wordId": "a519de2d"
-            },
-            {
-                "text": "slutar",
-                "translations": [
-                    "stop",
-                    "finish",
-                    "stops",
-                    "finishes",
-                    "quit",
-                    "quits"
-                ],
-                "wordId": "e88bec73"
-            },
-            {
-                "text": "stannar",
-                "translations": [
-                    "stay",
-                    "stops",
-                    "stop",
-                    "remain",
-                    "remains",
-                    "staying"
-                ],
-                "wordId": "49d63aef"
-            },
-            {
-                "text": "studerar",
-                "translations": [
-                    "studies",
-                    "study",
-                    "studying"
-                ],
-                "wordId": "54e91dcb"
-            },
-            {
-                "text": "stämmer",
-                "translations": [
-                    "is correct",
-                    "are correct"
-                ],
-                "wordId": "97cdcaff"
-            },
-            {
-                "text": "säger",
-                "translations": [
-                    "say",
-                    "saying",
-                    "is saying",
-                    "are saying",
-                    "says",
-                    "does say"
-                ],
-                "wordId": "7c1150e5"
-            },
-            {
-                "text": "tackar",
-                "translations": [
-                    "thank"
-                ],
-                "wordId": "e4f32322"
-            },
-            {
-                "text": "tittar",
-                "translations": [
-                    "is looking at",
-                    "look at",
-                    "are looking at",
-                    "am looking at",
-                    "look",
-                    "looks at",
-                    "watch",
-                    "watching"
-                ],
-                "wordId": "41197729"
-            },
-            {
-                "text": "tror",
-                "translations": [
-                    "believe",
-                    "believes",
-                    "think"
-                ],
-                "wordId": "c08bb9d6"
-            },
-            {
-                "text": "tänker",
-                "translations": [
-                    "thinking",
-                    "think",
-                    "planning",
-                    "intend to",
-                    "plan",
-                    "plans",
-                    "thinks"
-                ],
-                "wordId": "97bd322d"
-            },
-            {
-                "text": "undrar",
-                "translations": [
-                    "wonder"
-                ],
-                "wordId": "aad10ad9"
-            },
-            {
-                "text": "ut",
-                "translations": [
-                    "out"
-                ],
-                "wordId": "1b6d7438"
-            },
-            {
-                "text": "verkar",
-                "translations": [
-                    "seem",
-                    "seems"
-                ],
-                "wordId": "2df1c8fa"
-            },
-            {
-                "text": "vilar",
-                "translations": [
-                    "resting",
-                    "rest",
-                    "rests"
-                ],
-                "wordId": "06e0be91"
-            },
-            {
-                "text": "önskar",
-                "translations": [
-                    "wish",
-                    "wishes"
-                ],
-                "wordId": "059f6263"
-            },
-            {
-                "text": "öppnar",
-                "translations": [
-                    "opens",
-                    "opening",
-                    "open"
-                ],
-                "wordId": "56bae50c"
+                "wordId": "a4163497"
             }
         ],
         "Describe colors": [
@@ -4120,223 +4601,207 @@
         ],
         "Talk about time": [
             {
-                "text": "femte",
+                "text": "april",
                 "translations": [
-                    "fifth"
+                    "April"
                 ],
-                "wordId": "efb0c200"
+                "wordId": "1966bbd3"
             },
             {
-                "text": "femtio",
+                "text": "dag",
                 "translations": [
-                    "fifty"
+                    "day"
                 ],
-                "wordId": "c350c143"
+                "wordId": "fc4f6107"
             },
             {
-                "text": "fjärde",
+                "text": "datum",
                 "translations": [
-                    "fourth"
+                    "date"
                 ],
-                "wordId": "a46e95fa"
+                "wordId": "b05f4600"
             },
             {
-                "text": "fyrtio",
+                "text": "eftermiddag",
                 "translations": [
-                    "forty"
+                    "afternoon"
                 ],
-                "wordId": "fdc57586"
+                "wordId": "69090bea"
             },
             {
-                "text": "halv",
+                "text": "februari",
                 "translations": [
-                    "half"
+                    "February"
                 ],
-                "wordId": "97e4fbe9"
+                "wordId": "d80d8a83"
             },
             {
-                "text": "hundra",
+                "text": "fredag",
                 "translations": [
-                    "hundred"
+                    "Friday"
                 ],
-                "wordId": "a0ba9fc8"
+                "wordId": "ead3308d"
             },
             {
-                "text": "hälften",
+                "text": "helg",
                 "translations": [
-                    "the half",
-                    "half"
+                    "weekend"
                 ],
-                "wordId": "c360f13f"
+                "wordId": "329cf6cb"
             },
             {
-                "text": "krona",
+                "text": "januari",
                 "translations": [
-                    "krona",
-                    "crown"
+                    "January"
                 ],
-                "wordId": "1daa3be6"
+                "wordId": "13aabbf2"
             },
             {
-                "text": "majoritet",
+                "text": "juni",
                 "translations": [
-                    "majority"
+                    "June"
                 ],
-                "wordId": "348d596b"
+                "wordId": "8a41de37"
             },
             {
-                "text": "meter",
+                "text": "kalender",
                 "translations": [
-                    "meters",
-                    "meter",
-                    "metres"
+                    "calendar"
                 ],
-                "wordId": "b19e80d8"
+                "wordId": "54b3d31b"
             },
             {
-                "text": "nionde",
+                "text": "kväll",
                 "translations": [
-                    "ninth"
+                    "evening"
                 ],
-                "wordId": "3af1a59f"
+                "wordId": "b3d30e5c"
             },
             {
-                "text": "nittio",
+                "text": "lördag",
                 "translations": [
-                    "ninety"
+                    "Saturday"
                 ],
-                "wordId": "51adfbb0"
+                "wordId": "3ae904e2"
             },
             {
-                "text": "nittonhundratalet",
+                "text": "maj",
                 "translations": [
-                    "the twentieth century",
-                    "the 1900s",
-                    "the 20th century"
+                    "May"
                 ],
-                "wordId": "ddedff5a"
+                "wordId": "0262750e"
             },
             {
-                "text": "per",
+                "text": "mars",
                 "translations": [
-                    "per"
+                    "March"
                 ],
-                "wordId": "b38d0e94"
+                "wordId": "3f1c705d"
             },
             {
-                "text": "plus",
+                "text": "morgon",
                 "translations": [
-                    "plus"
+                    "morning"
                 ],
-                "wordId": "3ec41bfb"
+                "wordId": "b3844ea6"
             },
             {
-                "text": "sammanlagt",
+                "text": "månad",
                 "translations": [
-                    "a total of",
-                    "in total"
+                    "month"
                 ],
-                "wordId": "9ddf2801"
+                "wordId": "9c16b666"
             },
             {
-                "text": "sextio",
+                "text": "måndag",
                 "translations": [
-                    "sixty"
+                    "Monday"
                 ],
-                "wordId": "7e58eb8a"
+                "wordId": "f65fb2b3"
             },
             {
-                "text": "sjunde",
+                "text": "natt",
                 "translations": [
-                    "seventh"
+                    "night"
                 ],
-                "wordId": "243d3cd2"
+                "wordId": "3e578c55"
             },
             {
-                "text": "sjuttio",
+                "text": "om",
                 "translations": [
-                    "seventy"
+                    "about",
+                    "if",
+                    "of",
+                    "for",
+                    "in",
+                    "on"
                 ],
-                "wordId": "bb569b64"
+                "wordId": "ce945390"
             },
             {
-                "text": "sjätte",
+                "text": "onsdag",
                 "translations": [
-                    "sixth"
+                    "Wednesday"
                 ],
-                "wordId": "7fccd6fd"
+                "wordId": "75d2a1e6"
             },
             {
-                "text": "tjugo",
+                "text": "söndag",
                 "translations": [
-                    "twenty"
+                    "Sunday"
                 ],
-                "wordId": "30906352"
+                "wordId": "0ac2f0df"
             },
             {
-                "text": "tjugoett",
+                "text": "tid",
                 "translations": [
-                    "twenty one"
+                    "time",
+                    "appointment"
                 ],
-                "wordId": "f08f6eb4"
+                "wordId": "c202dbaf"
             },
             {
-                "text": "tjugofem",
+                "text": "timme",
                 "translations": [
-                    "twenty-five"
+                    "hour"
                 ],
-                "wordId": "aeca0dcf"
+                "wordId": "b832c3c0"
             },
             {
-                "text": "tjugofyra",
+                "text": "tisdag",
                 "translations": [
-                    "twenty-four"
+                    "Tuesday"
                 ],
-                "wordId": "6322ff86"
+                "wordId": "d9b669b6"
             },
             {
-                "text": "trettio",
+                "text": "torsdag",
                 "translations": [
-                    "thirty"
+                    "Thursday"
                 ],
-                "wordId": "c4cd31bd"
+                "wordId": "8e4cee8b"
             },
             {
-                "text": "tusen",
+                "text": "vecka",
                 "translations": [
-                    "thousand",
-                    "a thousand"
+                    "week"
                 ],
-                "wordId": "5710f8a9"
+                "wordId": "4367c3cd"
             },
             {
-                "text": "tusentals",
+                "text": "ålder",
                 "translations": [
-                    "thousands",
-                    "thousands of"
+                    "age"
                 ],
-                "wordId": "14899de2"
+                "wordId": "5b230fae"
             },
             {
-                "text": "värd",
+                "text": "år",
                 "translations": [
-                    "worth"
+                    "year",
+                    "years"
                 ],
-                "wordId": "17a4ccc7"
-            },
-            {
-                "text": "åttio",
-                "translations": [
-                    "eighty"
-                ],
-                "wordId": "dbffa05c"
-            },
-            {
-                "text": "åttonde",
-                "translations": [
-                    "eighth"
-                ],
-                "wordId": "2ecbfe85"
+                "wordId": "64cc1d01"
             }
         ],
         "Express dates and times": [
@@ -5387,6 +5852,393 @@
                     "precious"
                 ],
                 "wordId": "c55d84b0"
+            }
+        ],
+        "Use the present tense 2": [
+            {
+                "text": "bjuder",
+                "translations": [
+                    "offer",
+                    "offers"
+                ],
+                "wordId": "ddf45a2e"
+            },
+            {
+                "text": "bor",
+                "translations": [
+                    "does ... live",
+                    "live",
+                    "do ... live",
+                    "am/is/are living",
+                    "lives"
+                ],
+                "wordId": "b1fcc83a"
+            },
+            {
+                "text": "börjar",
+                "translations": [
+                    "starts",
+                    "begins",
+                    "start",
+                    "begin"
+                ],
+                "wordId": "72bb1c25"
+            },
+            {
+                "text": "fryser",
+                "translations": [
+                    "(am/are/is) cold",
+                    "am freezing",
+                    "freeze",
+                    "will freeze",
+                    "freezing"
+                ],
+                "wordId": "9a16eecb"
+            },
+            {
+                "text": "får",
+                "translations": [
+                    "get",
+                    "sheep",
+                    "may",
+                    "be allowed to",
+                    "can",
+                    "gets",
+                    "have to",
+                    "receive",
+                    "receives",
+                    "receiving"
+                ],
+                "wordId": "1d7b4566"
+            },
+            {
+                "text": "följer",
+                "translations": [
+                    "following",
+                    "follow",
+                    "follows"
+                ],
+                "wordId": "868ce812"
+            },
+            {
+                "text": "försöker",
+                "translations": [
+                    "tries",
+                    "try"
+                ],
+                "wordId": "1f083337"
+            },
+            {
+                "text": "ger",
+                "translations": [
+                    "gives",
+                    "give",
+                    "giving"
+                ],
+                "wordId": "0b5db40a"
+            },
+            {
+                "text": "hinner",
+                "translations": [
+                    "make it in time",
+                    "have enough time"
+                ],
+                "wordId": "c80f3ddd"
+            },
+            {
+                "text": "hjälper",
+                "translations": [
+                    "helps",
+                    "help",
+                    "helping"
+                ],
+                "wordId": "5df47789"
+            },
+            {
+                "text": "håller",
+                "translations": [
+                    "holding",
+                    "keep",
+                    "hold",
+                    "holds"
+                ],
+                "wordId": "914171bf"
+            },
+            {
+                "text": "kramar",
+                "translations": [
+                    "hugs",
+                    "hug"
+                ],
+                "wordId": "59ebb968"
+            },
+            {
+                "text": "kysser",
+                "translations": [
+                    "kiss",
+                    "kissing",
+                    "kisses"
+                ],
+                "wordId": "484baec7"
+            },
+            {
+                "text": "känner",
+                "translations": [
+                    "know",
+                    "feel",
+                    "knows"
+                ],
+                "wordId": "698c439c"
+            },
+            {
+                "text": "letar",
+                "translations": [
+                    "searching",
+                    "look",
+                    "looks",
+                    "search",
+                    "searches"
+                ],
+                "wordId": "b8660311"
+            },
+            {
+                "text": "lever",
+                "translations": [
+                    "live",
+                    "lives",
+                    "living"
+                ],
+                "wordId": "b1841d69"
+            },
+            {
+                "text": "ligger",
+                "translations": [
+                    "is",
+                    "is located",
+                    "is situated",
+                    "am/are/is lying",
+                    "lie down",
+                    "lie/lies",
+                    "lying down"
+                ],
+                "wordId": "6a0187c7"
+            },
+            {
+                "text": "litar",
+                "translations": [
+                    "trust"
+                ],
+                "wordId": "b13fe179"
+            },
+            {
+                "text": "lär",
+                "translations": [
+                    "learn",
+                    "teaches",
+                    "teach",
+                    "teaching"
+                ],
+                "wordId": "36b550ad"
+            },
+            {
+                "text": "orkar",
+                "translations": [
+                    "have enough energy"
+                ],
+                "wordId": "ab7cd8d8"
+            },
+            {
+                "text": "passerar",
+                "translations": [
+                    "passing",
+                    "passes",
+                    "pass"
+                ],
+                "wordId": "0c5b5126"
+            },
+            {
+                "text": "presenterar",
+                "translations": [
+                    "presents",
+                    "present",
+                    "introduces",
+                    "introduce"
+                ],
+                "wordId": "a1b9cb44"
+            },
+            {
+                "text": "ringer",
+                "translations": [
+                    "calls",
+                    "ringing",
+                    "call",
+                    "is calling"
+                ],
+                "wordId": "9eddcda9"
+            },
+            {
+                "text": "räcker",
+                "translations": [
+                    "is enough",
+                    "are enough",
+                    "suffice",
+                    "suffices"
+                ],
+                "wordId": "ba2823c6"
+            },
+            {
+                "text": "räddar",
+                "translations": [
+                    "saves",
+                    "rescues",
+                    "saving",
+                    "save"
+                ],
+                "wordId": "f4dcfd07"
+            },
+            {
+                "text": "slutar",
+                "translations": [
+                    "stop",
+                    "finish",
+                    "stops",
+                    "finishes",
+                    "quit",
+                    "quits"
+                ],
+                "wordId": "b8093436"
+            },
+            {
+                "text": "stannar",
+                "translations": [
+                    "stay",
+                    "stops",
+                    "stop",
+                    "remain",
+                    "remains",
+                    "staying"
+                ],
+                "wordId": "379d20a7"
+            },
+            {
+                "text": "studerar",
+                "translations": [
+                    "studies",
+                    "study",
+                    "studying"
+                ],
+                "wordId": "e1a050e3"
+            },
+            {
+                "text": "stämmer",
+                "translations": [
+                    "is correct",
+                    "are correct"
+                ],
+                "wordId": "041745ff"
+            },
+            {
+                "text": "säger",
+                "translations": [
+                    "say",
+                    "saying",
+                    "is saying",
+                    "are saying",
+                    "says",
+                    "does say"
+                ],
+                "wordId": "4eb8f3c2"
+            },
+            {
+                "text": "tackar",
+                "translations": [
+                    "thank"
+                ],
+                "wordId": "31706f66"
+            },
+            {
+                "text": "tittar",
+                "translations": [
+                    "is looking at",
+                    "look at",
+                    "are looking at",
+                    "am looking at",
+                    "look",
+                    "looks at",
+                    "watch",
+                    "watching"
+                ],
+                "wordId": "705bdb11"
+            },
+            {
+                "text": "tror",
+                "translations": [
+                    "believe",
+                    "believes",
+                    "think"
+                ],
+                "wordId": "f506f2f9"
+            },
+            {
+                "text": "tänker",
+                "translations": [
+                    "thinking",
+                    "think",
+                    "planning",
+                    "intend to",
+                    "plan",
+                    "plans",
+                    "thinks"
+                ],
+                "wordId": "1cf3cbc6"
+            },
+            {
+                "text": "undrar",
+                "translations": [
+                    "wonder"
+                ],
+                "wordId": "82f57069"
+            },
+            {
+                "text": "ut",
+                "translations": [
+                    "out"
+                ],
+                "wordId": "71952443"
+            },
+            {
+                "text": "verkar",
+                "translations": [
+                    "seem",
+                    "seems"
+                ],
+                "wordId": "2748c9ec"
+            },
+            {
+                "text": "vilar",
+                "translations": [
+                    "resting",
+                    "rest",
+                    "rests"
+                ],
+                "wordId": "27f6ad7b"
+            },
+            {
+                "text": "önskar",
+                "translations": [
+                    "wish",
+                    "wishes"
+                ],
+                "wordId": "a13af35f"
+            },
+            {
+                "text": "öppnar",
+                "translations": [
+                    "opens",
+                    "opening",
+                    "open"
+                ],
+                "wordId": "632ff4d8"
             }
         ],
         "Describe your routine": [
@@ -7447,299 +8299,438 @@
         ],
         "Describe activities": [
             {
-                "text": "antog",
+                "text": "allt",
                 "translations": [
-                    "assumed",
-                    "supposed"
+                    "everything",
+                    "all"
                 ],
-                "wordId": "e20da866"
+                "wordId": "8ded472a"
             },
             {
-                "text": "använde",
+                "text": "allting",
                 "translations": [
-                    "used"
+                    "everything"
                 ],
-                "wordId": "0aef201e"
+                "wordId": "62363e41"
             },
             {
-                "text": "behövde",
+                "text": "andra",
                 "translations": [
-                    "needed"
+                    "other",
+                    "second",
+                    "others"
                 ],
-                "wordId": "440dce0e"
+                "wordId": "91967ee7"
             },
             {
-                "text": "bestämde",
+                "text": "annan",
                 "translations": [
-                    "decided"
+                    "another",
+                    "different",
+                    "other"
                 ],
-                "wordId": "db04ad45"
+                "wordId": "ab67c484"
             },
             {
-                "text": "bjöd",
+                "text": "annat",
                 "translations": [
-                    "invited",
-                    "treated … to"
+                    "other",
+                    "else",
+                    "different",
+                    "another"
                 ],
-                "wordId": "e3654a0a"
+                "wordId": "b8bb10db"
             },
             {
-                "text": "blev",
+                "text": "båda",
                 "translations": [
-                    "was",
-                    "became",
-                    "were",
-                    "got",
-                    "turned"
+                    "both"
                 ],
-                "wordId": "7dd7fedd"
+                "wordId": "1e820cdf"
             },
             {
-                "text": "brukade",
+                "text": "den där",
                 "translations": [
-                    "used to",
-                    "usually"
+                    "that"
                 ],
-                "wordId": "a3470b47"
+                "wordId": "6c92dad6"
             },
             {
-                "text": "började",
+                "text": "den här",
                 "translations": [
-                    "started",
-                    "began"
+                    "this"
                 ],
-                "wordId": "0d9c9ab7"
+                "wordId": "dbe216ab"
             },
             {
-                "text": "flög",
+                "text": "denna",
                 "translations": [
-                    "flew"
+                    "this"
                 ],
-                "wordId": "2ad30a31"
+                "wordId": "6ff7c656"
             },
             {
-                "text": "följde",
+                "text": "dessa",
                 "translations": [
-                    "followed"
+                    "these"
                 ],
-                "wordId": "454110a2"
+                "wordId": "f222686a"
             },
             {
-                "text": "föll",
+                "text": "detta",
                 "translations": [
-                    "fell"
+                    "this"
                 ],
-                "wordId": "37959ff2"
+                "wordId": "d1c859ec"
             },
             {
-                "text": "förstod",
+                "text": "förra",
                 "translations": [
-                    "understood"
+                    "previous",
+                    "last"
                 ],
-                "wordId": "8040d772"
+                "wordId": "4dbb8d44"
             },
             {
-                "text": "försökte",
+                "text": "förrförra",
                 "translations": [
-                    "tried"
+                    "the … before last"
                 ],
-                "wordId": "92f93d84"
+                "wordId": "fc287f4b"
             },
             {
-                "text": "glömde",
+                "text": "ingen",
                 "translations": [
-                    "forgot"
+                    "no",
+                    "nobody",
+                    "anybody"
                 ],
-                "wordId": "d984d188"
+                "wordId": "81d7e533"
             },
             {
-                "text": "hamnade",
+                "text": "ingenting",
                 "translations": [
-                    "ended up"
+                    "nothing",
+                    "anything",
+                    "not anything"
                 ],
-                "wordId": "a7cc41db"
+                "wordId": "e9a3493a"
             },
             {
-                "text": "hette",
+                "text": "man",
                 "translations": [
-                    "was called",
-                    "… name was"
+                    "one",
+                    "you",
+                    "husband",
+                    "man",
+                    "they"
                 ],
-                "wordId": "5483f559"
+                "wordId": "5ca1b7d8"
             },
             {
-                "text": "hjälpte",
+                "text": "någon",
                 "translations": [
-                    "helped"
+                    "any",
+                    "somebody",
+                    "anybody",
+                    "anyone",
+                    "someone"
                 ],
-                "wordId": "2122341a"
+                "wordId": "03dd4940"
             },
             {
-                "text": "hoppades",
+                "text": "någonting",
                 "translations": [
-                    "hoped"
+                    "something",
+                    "anything"
                 ],
-                "wordId": "771e4523"
+                "wordId": "280c907c"
             },
             {
-                "text": "hyrde",
+                "text": "något",
                 "translations": [
-                    "rented"
+                    "something",
+                    "anything",
+                    "any",
+                    "an"
                 ],
-                "wordId": "24d014ec"
+                "wordId": "524acb28"
             },
             {
-                "text": "hängde",
+                "text": "några",
                 "translations": [
-                    "hanging",
-                    "hung"
+                    "some",
+                    "any",
+                    "a few"
                 ],
-                "wordId": "558f7738"
+                "wordId": "a0f53da2"
             },
             {
-                "text": "kunde",
+                "text": "själv",
                 "translations": [
-                    "could",
-                    "knew",
-                    "was able to"
+                    "myself",
+                    "himself",
+                    "herself",
+                    "self"
                 ],
-                "wordId": "a012b443"
+                "wordId": "629fcce4"
             },
             {
-                "text": "kändes",
+                "text": "sådan",
                 "translations": [
-                    "felt"
+                    "such"
                 ],
-                "wordId": "37723a1c"
+                "wordId": "db832e02"
             },
             {
-                "text": "körde",
+                "text": "utom",
                 "translations": [
-                    "drove"
+                    "except"
                 ],
-                "wordId": "b57186f3"
+                "wordId": "a7f6ce51"
             },
             {
-                "text": "levde",
+                "text": "varandra",
                 "translations": [
-                    "lived"
+                    "each other"
                 ],
-                "wordId": "ea9ced67"
+                "wordId": "66edaf2b"
             },
             {
-                "text": "liknade",
+                "text": "varje",
                 "translations": [
-                    "resembled",
-                    "looked like",
-                    "were alike"
+                    "every"
                 ],
-                "wordId": "525499f0"
+                "wordId": "3cba7224"
             },
             {
-                "text": "lärde",
+                "text": "vem som helst",
                 "translations": [
-                    "learned",
-                    "taught"
+                    "anybody",
+                    "anyone"
                 ],
-                "wordId": "910e8eca"
+                "wordId": "07092204"
+            }
+        ],
+        "Talk about time 2": [
+            {
+                "text": "femte",
+                "translations": [
+                    "fifth"
+                ],
+                "wordId": "8d2d03e2"
             },
             {
-                "text": "läste",
+                "text": "femtio",
                 "translations": [
-                    "read"
+                    "fifty"
                 ],
-                "wordId": "64838078"
+                "wordId": "4272d0f4"
             },
             {
-                "text": "lät",
+                "text": "fjärde",
                 "translations": [
-                    "let"
+                    "fourth"
                 ],
-                "wordId": "761bc53f"
+                "wordId": "d8633d82"
             },
             {
-                "text": "låg",
+                "text": "fyrtio",
                 "translations": [
-                    "were",
-                    "low",
-                    "lay"
+                    "forty"
                 ],
-                "wordId": "acd06eb7"
+                "wordId": "57177b82"
             },
             {
-                "text": "mindes",
+                "text": "halv",
                 "translations": [
-                    "remembered"
+                    "half"
                 ],
-                "wordId": "e8378310"
+                "wordId": "b74e0ef9"
             },
             {
-                "text": "nittiotalet",
+                "text": "hundra",
                 "translations": [
-                    "the nineties"
+                    "hundred"
                 ],
-                "wordId": "8b0a4355"
+                "wordId": "fc3fad77"
             },
             {
-                "text": "räckte",
+                "text": "hälften",
                 "translations": [
-                    "was enough",
-                    "sufficed"
+                    "the half",
+                    "half"
                 ],
-                "wordId": "60023c51"
+                "wordId": "783c1f7a"
             },
             {
-                "text": "satt",
+                "text": "krona",
                 "translations": [
-                    "was sitting",
-                    "sat"
+                    "krona",
+                    "crown"
                 ],
-                "wordId": "e3abfa93"
+                "wordId": "33997752"
             },
             {
-                "text": "sjuttiotalet",
+                "text": "majoritet",
                 "translations": [
-                    "the seventies"
+                    "majority"
                 ],
-                "wordId": "56435246"
+                "wordId": "3a612e59"
             },
             {
-                "text": "sjöng",
+                "text": "meter",
                 "translations": [
-                    "sang"
+                    "meters",
+                    "meter",
+                    "metres"
                 ],
-                "wordId": "603847c0"
+                "wordId": "453387ce"
             },
             {
-                "text": "slutade",
+                "text": "nionde",
                 "translations": [
-                    "stopped",
-                    "quit"
+                    "ninth"
                 ],
-                "wordId": "80b05bd7"
+                "wordId": "f1e39bfa"
             },
             {
-                "text": "stod",
+                "text": "nittio",
                 "translations": [
-                    "was",
-                    "were",
-                    "stood"
+                    "ninety"
                 ],
-                "wordId": "3bab12c0"
+                "wordId": "5421c88a"
             },
             {
-                "text": "torkade",
+                "text": "nittonhundratalet",
                 "translations": [
-                    "dried"
+                    "the twentieth century",
+                    "the 1900s",
+                    "the 20th century"
                 ],
-                "wordId": "79936b87"
+                "wordId": "5c8fdd05"
             },
             {
-                "text": "valde",
+                "text": "per",
                 "translations": [
-                    "chose"
+                    "per"
                 ],
-                "wordId": "bc0cd9a7"
+                "wordId": "5727cb04"
+            },
+            {
+                "text": "plus",
+                "translations": [
+                    "plus"
+                ],
+                "wordId": "7bc67eba"
+            },
+            {
+                "text": "sammanlagt",
+                "translations": [
+                    "a total of",
+                    "in total"
+                ],
+                "wordId": "c37a4370"
+            },
+            {
+                "text": "sextio",
+                "translations": [
+                    "sixty"
+                ],
+                "wordId": "59249922"
+            },
+            {
+                "text": "sjunde",
+                "translations": [
+                    "seventh"
+                ],
+                "wordId": "df447bf1"
+            },
+            {
+                "text": "sjuttio",
+                "translations": [
+                    "seventy"
+                ],
+                "wordId": "37559f72"
+            },
+            {
+                "text": "sjätte",
+                "translations": [
+                    "sixth"
+                ],
+                "wordId": "1642b4a6"
+            },
+            {
+                "text": "tjugo",
+                "translations": [
+                    "twenty"
+                ],
+                "wordId": "bc5bec29"
+            },
+            {
+                "text": "tjugoett",
+                "translations": [
+                    "twenty one"
+                ],
+                "wordId": "0b829f7e"
+            },
+            {
+                "text": "tjugofem",
+                "translations": [
+                    "twenty-five"
+                ],
+                "wordId": "981ce275"
+            },
+            {
+                "text": "tjugofyra",
+                "translations": [
+                    "twenty-four"
+                ],
+                "wordId": "3f98951f"
+            },
+            {
+                "text": "trettio",
+                "translations": [
+                    "thirty"
+                ],
+                "wordId": "e5e5abd5"
+            },
+            {
+                "text": "tusen",
+                "translations": [
+                    "thousand",
+                    "a thousand"
+                ],
+                "wordId": "7de37285"
+            },
+            {
+                "text": "tusentals",
+                "translations": [
+                    "thousands",
+                    "thousands of"
+                ],
+                "wordId": "75c95bb1"
+            },
+            {
+                "text": "värd",
+                "translations": [
+                    "worth"
+                ],
+                "wordId": "866ce31e"
+            },
+            {
+                "text": "åttio",
+                "translations": [
+                    "eighty"
+                ],
+                "wordId": "1dfcb157"
+            },
+            {
+                "text": "åttonde",
+                "translations": [
+                    "eighth"
+                ],
+                "wordId": "82351cdb"
             }
         ],
         "Describe things you do": [
@@ -8917,241 +9908,259 @@
         ],
         "Discuss recent events": [
             {
-                "text": "betalat",
+                "text": "behöll",
+                "translations": [
+                    "kept"
+                ],
+                "wordId": "6412b304"
+            },
+            {
+                "text": "betalade",
                 "translations": [
                     "paid"
                 ],
-                "wordId": "defdf479"
+                "wordId": "78a919e1"
             },
             {
-                "text": "blivit",
+                "text": "bodde",
                 "translations": [
-                    "become",
-                    "turned"
+                    "lived",
+                    "stayed"
                 ],
-                "wordId": "a14f27a5"
+                "wordId": "f21a587d"
             },
             {
-                "text": "frågat",
+                "text": "dog",
+                "translations": [
+                    "died"
+                ],
+                "wordId": "cc2a0553"
+            },
+            {
+                "text": "dök upp",
+                "translations": [
+                    "appeared",
+                    "showed up"
+                ],
+                "wordId": "1afc2449"
+            },
+            {
+                "text": "fanns",
+                "translations": [
+                    "was",
+                    "were"
+                ],
+                "wordId": "cee14757"
+            },
+            {
+                "text": "fick",
+                "translations": [
+                    "got",
+                    "was allowed to",
+                    "received"
+                ],
+                "wordId": "2c997a62"
+            },
+            {
+                "text": "frågade",
                 "translations": [
                     "asked"
                 ],
-                "wordId": "dc7812cd"
+                "wordId": "f89aa60b"
             },
             {
-                "text": "fått",
+                "text": "förklarade",
                 "translations": [
-                    "received",
-                    "got",
-                    "gotten"
+                    "explained"
                 ],
-                "wordId": "b93ad2ed"
+                "wordId": "d8fdf003"
             },
             {
-                "text": "förut",
+                "text": "gav",
                 "translations": [
-                    "before",
-                    "previously"
+                    "gave"
                 ],
-                "wordId": "deb0f19d"
+                "wordId": "bdf7cb07"
             },
             {
-                "text": "gett",
+                "text": "hände",
                 "translations": [
-                    "given"
+                    "happened"
                 ],
-                "wordId": "9916196c"
+                "wordId": "4f37185d"
             },
             {
-                "text": "gjort",
+                "text": "höll",
                 "translations": [
-                    "made",
-                    "done"
+                    "held"
                 ],
-                "wordId": "399ccc59"
+                "wordId": "1ebd4dc9"
             },
             {
-                "text": "gått",
+                "text": "i morse",
                 "translations": [
-                    "gone",
-                    "walked"
+                    "this morning"
                 ],
-                "wordId": "3990e030"
+                "wordId": "938e3669"
             },
             {
-                "text": "haft",
+                "text": "innehöll",
                 "translations": [
-                    "had"
+                    "contained"
                 ],
-                "wordId": "05251cb1"
+                "wordId": "619d5041"
             },
             {
-                "text": "har",
+                "text": "kände",
                 "translations": [
-                    "have",
-                    "has",
-                    "having"
+                    "felt",
+                    "knew"
                 ],
-                "wordId": "3ae5b1d4"
+                "wordId": "63f544e3"
             },
             {
-                "text": "hört",
+                "text": "köpte",
                 "translations": [
-                    "heard"
+                    "bought"
                 ],
-                "wordId": "3516a7e9"
+                "wordId": "05c2159a"
             },
             {
-                "text": "kommit",
+                "text": "letade",
                 "translations": [
-                    "come",
-                    "arrived"
+                    "looked",
+                    "searched"
                 ],
-                "wordId": "732579bc"
+                "wordId": "d550238c"
             },
             {
-                "text": "lagat mat",
+                "text": "litade",
                 "translations": [
-                    "cooked"
+                    "trusted"
                 ],
-                "wordId": "0b12ee6a"
+                "wordId": "0a73cc07"
             },
             {
-                "text": "lagt",
+                "text": "presenterade",
                 "translations": [
-                    "put",
-                    "laid"
+                    "introduced"
                 ],
-                "wordId": "c09f45dc"
+                "wordId": "9644be62"
             },
             {
-                "text": "lekt",
+                "text": "sov",
                 "translations": [
-                    "played"
+                    "slept"
                 ],
-                "wordId": "f294481d"
+                "wordId": "16366e0b"
             },
             {
-                "text": "lämnat",
+                "text": "sprang",
                 "translations": [
-                    "left"
+                    "ran"
                 ],
-                "wordId": "c5ad4273"
+                "wordId": "444a9345"
             },
             {
-                "text": "länge",
+                "text": "stannade",
                 "translations": [
-                    "long",
-                    "a long time"
+                    "stopped",
+                    "stayed"
                 ],
-                "wordId": "b807ed13"
+                "wordId": "619756d1"
             },
             {
-                "text": "läst",
+                "text": "stöttade",
                 "translations": [
-                    "read",
-                    "studied"
+                    "supported"
                 ],
-                "wordId": "098ebd3a"
+                "wordId": "565cfb65"
             },
             {
-                "text": "pratat",
+                "text": "svarade",
                 "translations": [
-                    "spoken",
-                    "talked"
+                    "answered"
                 ],
-                "wordId": "7e241ef7"
+                "wordId": "4ba23616"
             },
             {
-                "text": "regnat",
+                "text": "svängde",
                 "translations": [
-                    "rained"
+                    "turned"
                 ],
-                "wordId": "e019ee24"
+                "wordId": "1967ed4e"
             },
             {
-                "text": "ringt",
+                "text": "sålde",
                 "translations": [
-                    "called"
+                    "sold"
                 ],
-                "wordId": "a30431fa"
+                "wordId": "304246c4"
             },
             {
-                "text": "sagt",
+                "text": "tillbaka",
                 "translations": [
-                    "said"
+                    "back"
                 ],
-                "wordId": "88caa69e"
+                "wordId": "21755a6b"
             },
             {
-                "text": "sedan",
+                "text": "tittade",
                 "translations": [
-                    "since"
+                    "looked",
+                    "looked at",
+                    "watched"
                 ],
-                "wordId": "066b1eef"
+                "wordId": "09c378b0"
             },
             {
-                "text": "sett",
+                "text": "vann",
                 "translations": [
-                    "seen"
+                    "won"
                 ],
-                "wordId": "b12e25cb"
+                "wordId": "86bc778b"
             },
             {
-                "text": "skickat",
+                "text": "verkade",
                 "translations": [
-                    "sent"
+                    "seemed"
                 ],
-                "wordId": "648327db"
+                "wordId": "eb238c5d"
             },
             {
-                "text": "skrivit",
+                "text": "vilade",
                 "translations": [
-                    "written"
+                    "rested"
                 ],
-                "wordId": "665420f4"
+                "wordId": "48652792"
             },
             {
-                "text": "tagit",
+                "text": "visade",
                 "translations": [
-                    "taken"
+                    "showed"
                 ],
-                "wordId": "3b44d8dc"
+                "wordId": "9edc50f1"
             },
             {
-                "text": "tappat",
+                "text": "visste",
                 "translations": [
-                    "lost"
+                    "knew"
                 ],
-                "wordId": "81c63fa5"
+                "wordId": "454cbcdc"
             },
             {
-                "text": "utvecklat",
+                "text": "väntade",
                 "translations": [
-                    "developed"
+                    "waited"
                 ],
-                "wordId": "c33249d6"
+                "wordId": "732907ad"
             },
             {
-                "text": "varit",
+                "text": "öppnade",
                 "translations": [
-                    "been"
+                    "opened"
                 ],
-                "wordId": "83c2b999"
-            },
-            {
-                "text": "velat",
-                "translations": [
-                    "wanted"
-                ],
-                "wordId": "a9f3507e"
-            },
-            {
-                "text": "ätit",
-                "translations": [
-                    "eaten"
-                ],
-                "wordId": "025ec871"
+                "wordId": "73e90635"
             }
         ],
         "Talk about hobbies": [
@@ -9768,6 +10777,303 @@
                     "the Baltic Sea"
                 ],
                 "wordId": "9e5da4f6"
+            }
+        ],
+        "Describe activities 2": [
+            {
+                "text": "antog",
+                "translations": [
+                    "assumed",
+                    "supposed"
+                ],
+                "wordId": "2879028c"
+            },
+            {
+                "text": "använde",
+                "translations": [
+                    "used"
+                ],
+                "wordId": "d1a1723c"
+            },
+            {
+                "text": "behövde",
+                "translations": [
+                    "needed"
+                ],
+                "wordId": "8b33020d"
+            },
+            {
+                "text": "bestämde",
+                "translations": [
+                    "decided"
+                ],
+                "wordId": "46e7ba58"
+            },
+            {
+                "text": "bjöd",
+                "translations": [
+                    "invited",
+                    "treated … to"
+                ],
+                "wordId": "4a178cce"
+            },
+            {
+                "text": "blev",
+                "translations": [
+                    "was",
+                    "became",
+                    "were",
+                    "got",
+                    "turned"
+                ],
+                "wordId": "0aec61b3"
+            },
+            {
+                "text": "brukade",
+                "translations": [
+                    "used to",
+                    "usually"
+                ],
+                "wordId": "118735d0"
+            },
+            {
+                "text": "började",
+                "translations": [
+                    "started",
+                    "began"
+                ],
+                "wordId": "6520399c"
+            },
+            {
+                "text": "flög",
+                "translations": [
+                    "flew"
+                ],
+                "wordId": "1c5129bd"
+            },
+            {
+                "text": "följde",
+                "translations": [
+                    "followed"
+                ],
+                "wordId": "6d60b078"
+            },
+            {
+                "text": "föll",
+                "translations": [
+                    "fell"
+                ],
+                "wordId": "5a5e8e0c"
+            },
+            {
+                "text": "förstod",
+                "translations": [
+                    "understood"
+                ],
+                "wordId": "c5a8cde1"
+            },
+            {
+                "text": "försökte",
+                "translations": [
+                    "tried"
+                ],
+                "wordId": "c05d7a35"
+            },
+            {
+                "text": "glömde",
+                "translations": [
+                    "forgot"
+                ],
+                "wordId": "acddeb69"
+            },
+            {
+                "text": "hamnade",
+                "translations": [
+                    "ended up"
+                ],
+                "wordId": "04002e9c"
+            },
+            {
+                "text": "hette",
+                "translations": [
+                    "was called",
+                    "… name was"
+                ],
+                "wordId": "ec23eeed"
+            },
+            {
+                "text": "hjälpte",
+                "translations": [
+                    "helped"
+                ],
+                "wordId": "5e0e98c4"
+            },
+            {
+                "text": "hoppades",
+                "translations": [
+                    "hoped"
+                ],
+                "wordId": "5b844587"
+            },
+            {
+                "text": "hyrde",
+                "translations": [
+                    "rented"
+                ],
+                "wordId": "74ed885d"
+            },
+            {
+                "text": "hängde",
+                "translations": [
+                    "hanging",
+                    "hung"
+                ],
+                "wordId": "3f55a1e7"
+            },
+            {
+                "text": "kunde",
+                "translations": [
+                    "could",
+                    "knew",
+                    "was able to"
+                ],
+                "wordId": "3bbc7797"
+            },
+            {
+                "text": "kändes",
+                "translations": [
+                    "felt"
+                ],
+                "wordId": "18e40232"
+            },
+            {
+                "text": "körde",
+                "translations": [
+                    "drove"
+                ],
+                "wordId": "25382e0b"
+            },
+            {
+                "text": "levde",
+                "translations": [
+                    "lived"
+                ],
+                "wordId": "1166d904"
+            },
+            {
+                "text": "liknade",
+                "translations": [
+                    "resembled",
+                    "looked like",
+                    "were alike"
+                ],
+                "wordId": "d95fda7d"
+            },
+            {
+                "text": "lärde",
+                "translations": [
+                    "learned",
+                    "taught"
+                ],
+                "wordId": "21749a42"
+            },
+            {
+                "text": "läste",
+                "translations": [
+                    "read"
+                ],
+                "wordId": "e15c6a38"
+            },
+            {
+                "text": "lät",
+                "translations": [
+                    "let"
+                ],
+                "wordId": "5be3637c"
+            },
+            {
+                "text": "låg",
+                "translations": [
+                    "were",
+                    "low",
+                    "lay"
+                ],
+                "wordId": "6c733c2f"
+            },
+            {
+                "text": "mindes",
+                "translations": [
+                    "remembered"
+                ],
+                "wordId": "a624540b"
+            },
+            {
+                "text": "nittiotalet",
+                "translations": [
+                    "the nineties"
+                ],
+                "wordId": "03b7b600"
+            },
+            {
+                "text": "räckte",
+                "translations": [
+                    "was enough",
+                    "sufficed"
+                ],
+                "wordId": "96d76f94"
+            },
+            {
+                "text": "satt",
+                "translations": [
+                    "was sitting",
+                    "sat"
+                ],
+                "wordId": "9774ca52"
+            },
+            {
+                "text": "sjuttiotalet",
+                "translations": [
+                    "the seventies"
+                ],
+                "wordId": "f6168ec1"
+            },
+            {
+                "text": "sjöng",
+                "translations": [
+                    "sang"
+                ],
+                "wordId": "480458db"
+            },
+            {
+                "text": "slutade",
+                "translations": [
+                    "stopped",
+                    "quit"
+                ],
+                "wordId": "edb0f579"
+            },
+            {
+                "text": "stod",
+                "translations": [
+                    "was",
+                    "were",
+                    "stood"
+                ],
+                "wordId": "9c12a4d3"
+            },
+            {
+                "text": "torkade",
+                "translations": [
+                    "dried"
+                ],
+                "wordId": "5097eb35"
+            },
+            {
+                "text": "valde",
+                "translations": [
+                    "chose"
+                ],
+                "wordId": "4f21a992"
             }
         ],
         "Comment on foods": [
@@ -11159,6 +12465,245 @@
                     "eldest"
                 ],
                 "wordId": "0b54d740"
+            }
+        ],
+        "Discuss recent events 2": [
+            {
+                "text": "betalat",
+                "translations": [
+                    "paid"
+                ],
+                "wordId": "0dea18ad"
+            },
+            {
+                "text": "blivit",
+                "translations": [
+                    "become",
+                    "turned"
+                ],
+                "wordId": "d8c655a3"
+            },
+            {
+                "text": "frågat",
+                "translations": [
+                    "asked"
+                ],
+                "wordId": "fa3e9e88"
+            },
+            {
+                "text": "fått",
+                "translations": [
+                    "received",
+                    "got",
+                    "gotten"
+                ],
+                "wordId": "41592b8b"
+            },
+            {
+                "text": "förut",
+                "translations": [
+                    "before",
+                    "previously"
+                ],
+                "wordId": "ab224995"
+            },
+            {
+                "text": "gett",
+                "translations": [
+                    "given"
+                ],
+                "wordId": "be880737"
+            },
+            {
+                "text": "gjort",
+                "translations": [
+                    "made",
+                    "done"
+                ],
+                "wordId": "c86b7aa7"
+            },
+            {
+                "text": "gått",
+                "translations": [
+                    "gone",
+                    "walked"
+                ],
+                "wordId": "e1ea2458"
+            },
+            {
+                "text": "haft",
+                "translations": [
+                    "had"
+                ],
+                "wordId": "4fc48516"
+            },
+            {
+                "text": "har",
+                "translations": [
+                    "have",
+                    "has",
+                    "having"
+                ],
+                "wordId": "d50a6171"
+            },
+            {
+                "text": "hört",
+                "translations": [
+                    "heard"
+                ],
+                "wordId": "901d8686"
+            },
+            {
+                "text": "kommit",
+                "translations": [
+                    "come",
+                    "arrived"
+                ],
+                "wordId": "891ea05b"
+            },
+            {
+                "text": "lagat mat",
+                "translations": [
+                    "cooked"
+                ],
+                "wordId": "6c511512"
+            },
+            {
+                "text": "lagt",
+                "translations": [
+                    "put",
+                    "laid"
+                ],
+                "wordId": "4d73a91e"
+            },
+            {
+                "text": "lekt",
+                "translations": [
+                    "played"
+                ],
+                "wordId": "2a7b04cb"
+            },
+            {
+                "text": "lämnat",
+                "translations": [
+                    "left"
+                ],
+                "wordId": "2edef2cd"
+            },
+            {
+                "text": "länge",
+                "translations": [
+                    "long",
+                    "a long time"
+                ],
+                "wordId": "00130638"
+            },
+            {
+                "text": "läst",
+                "translations": [
+                    "read",
+                    "studied"
+                ],
+                "wordId": "5961fab7"
+            },
+            {
+                "text": "pratat",
+                "translations": [
+                    "spoken",
+                    "talked"
+                ],
+                "wordId": "83f0097f"
+            },
+            {
+                "text": "regnat",
+                "translations": [
+                    "rained"
+                ],
+                "wordId": "14dcb064"
+            },
+            {
+                "text": "ringt",
+                "translations": [
+                    "called"
+                ],
+                "wordId": "3c315623"
+            },
+            {
+                "text": "sagt",
+                "translations": [
+                    "said"
+                ],
+                "wordId": "e89d9949"
+            },
+            {
+                "text": "sedan",
+                "translations": [
+                    "since"
+                ],
+                "wordId": "78154bca"
+            },
+            {
+                "text": "sett",
+                "translations": [
+                    "seen"
+                ],
+                "wordId": "0f4e161b"
+            },
+            {
+                "text": "skickat",
+                "translations": [
+                    "sent"
+                ],
+                "wordId": "427371e8"
+            },
+            {
+                "text": "skrivit",
+                "translations": [
+                    "written"
+                ],
+                "wordId": "b987e3e4"
+            },
+            {
+                "text": "tagit",
+                "translations": [
+                    "taken"
+                ],
+                "wordId": "36d875ec"
+            },
+            {
+                "text": "tappat",
+                "translations": [
+                    "lost"
+                ],
+                "wordId": "1446ae73"
+            },
+            {
+                "text": "utvecklat",
+                "translations": [
+                    "developed"
+                ],
+                "wordId": "c614a695"
+            },
+            {
+                "text": "varit",
+                "translations": [
+                    "been"
+                ],
+                "wordId": "64a345f3"
+            },
+            {
+                "text": "velat",
+                "translations": [
+                    "wanted"
+                ],
+                "wordId": "736c98c0"
+            },
+            {
+                "text": "ätit",
+                "translations": [
+                    "eaten"
+                ],
+                "wordId": "dc182155"
             }
         ]
     },
