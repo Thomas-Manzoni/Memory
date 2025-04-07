@@ -53,4 +53,3 @@ fun SectionSelectionMenu(viewModel: FlashcardViewModel, onSectionSelected: (Int)
         }
     }
 }
-

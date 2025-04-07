@@ -38,7 +38,12 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private val _currentUnitVal = MutableLiveData(0)
     val currentUnitVal: LiveData<Int> = _currentUnitVal
 
-    private var numberOfSections = 2
+    private var numberOfSections = 3
+
+    var selectedSection = false
+    var selectedSectionIndex = 0
+    var selectedUnit = false
+    var selectedUnitIndex = 0
 
     // Database stuff ----------------------------------------
     private val db = DatabaseProvider.getDatabase(application.applicationContext)
@@ -72,7 +77,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     init {
         loadFlashcardRepo()
-        loadRandomFlashcard()
     }
 
     private fun loadFlashcardRepo() {
@@ -84,14 +88,20 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         //val numberOfSections = _flashcardSections.value?.size ?: 0
         if (numberOfSections == 0) return
 
-        val randomSectionIndex = Random.nextInt(0, numberOfSections)
+        var randomSectionIndex = Random.nextInt(0, numberOfSections)
+        if (selectedSection){
+            randomSectionIndex = selectedSectionIndex
+        }
         _currentSectionVal.value = randomSectionIndex
         val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
 
         val unitCount = selectedSection.units.size
         if (unitCount == 0) return
 
-        val randomUnitIndex = Random.nextInt(0, unitCount)
+        var randomUnitIndex = Random.nextInt(0, unitCount)
+        if (selectedUnit){
+            randomUnitIndex = selectedUnitIndex
+        }
         _currentUnitVal.value = randomUnitIndex
         val selectedUnit = selectedSection.units[randomUnitIndex]
 
@@ -101,5 +111,43 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         val randomFlashcardIndex = Random.nextInt(0, flashcardCount)
         val selectedFlashcard = selectedUnit.flashcards[randomFlashcardIndex]
         _currentFlashcard.value = selectedFlashcard
+    }
+
+    fun selectSection(index: Int) {
+        _flashcardSections.value?.let { units ->
+            if (index in units.indices) {
+                selectedSection = true
+                selectedSectionIndex = index
+                _currentSection.value = units[index]
+                showUnits()
+            }
+        }
+    }
+
+    fun selectUnit(index: Int) {
+        _flashcardUnits.value?.let { units ->
+            if (index in units.indices) {
+                selectedUnit = true
+                selectedUnitIndex = index
+                _currentUnit.value = units[index]
+            }
+        }
+    }
+
+    private fun showUnits() {
+        _currentSection.value?.units?.let { units ->
+            if (units.isNotEmpty()) {
+                // Assigns the values of all the units
+                _flashcardUnits.value = units
+            }
+        }
+    }
+
+    fun resetSectionSelection() {
+        selectedSection = false
+    }
+
+    fun resetUnitSelection() {
+        selectedUnit = false
     }
 }
