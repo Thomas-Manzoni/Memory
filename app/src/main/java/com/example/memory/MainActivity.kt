@@ -50,9 +50,7 @@ class MainActivity : ComponentActivity() {
                 composable("unit_selection_play/{section}") { backStackEntry ->
                     val sectionIndex = backStackEntry.arguments?.getString("section")?.toIntOrNull() ?: 0
                     viewModelPlay.selectSection(sectionIndex)
-                    UnitSelectionPlayMenu(viewModelPlay) { selectedUnit ->
-                        navController.navigate("flashcard_screen/$selectedUnit")
-                    }
+                    UnitSelectionPlayMenu(viewModelPlay, navController)
                 }
 
                 // Existing Flashcard Navigation

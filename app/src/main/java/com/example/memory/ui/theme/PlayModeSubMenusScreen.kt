@@ -12,16 +12,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.memory.viewmodel.FlashcardViewModel
+import androidx.navigation.NavController
 import com.example.memory.viewmodel.PlayCardViewModel
 
 @Composable
 fun SectionSelectionPlayMenu(viewModel: PlayCardViewModel, onSectionSelected: (Int) -> Unit){
     val flashcardSections by viewModel.flashcardSections.observeAsState(emptyList())
+
+    LaunchedEffect(Unit) {
+        viewModel.resetSectionSelection()
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Select a Section", style = MaterialTheme.typography.headlineMedium)
@@ -42,8 +47,12 @@ fun SectionSelectionPlayMenu(viewModel: PlayCardViewModel, onSectionSelected: (I
 }
 
 @Composable
-fun UnitSelectionPlayMenu(viewModel: PlayCardViewModel, onUnitSelected: (Int) -> Unit) {
+fun UnitSelectionPlayMenu(viewModel: PlayCardViewModel, navController: NavController) {
     val flashcardUnits by viewModel.flashcardUnits.observeAsState(emptyList())
+
+    LaunchedEffect(Unit) {
+        viewModel.resetUnitSelection()
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Select a Unit", style = MaterialTheme.typography.headlineMedium)
@@ -54,7 +63,7 @@ fun UnitSelectionPlayMenu(viewModel: PlayCardViewModel, onUnitSelected: (Int) ->
 
             item {
                 Button(
-                    onClick = { onUnitSelected(4) },
+                    onClick = { navController.navigate("play_mode") },
                     modifier = Modifier.fillMaxWidth().padding(8.dp)
                 ) {
                     Text(text = "Manual Entry")
@@ -63,7 +72,9 @@ fun UnitSelectionPlayMenu(viewModel: PlayCardViewModel, onUnitSelected: (Int) ->
 
             itemsIndexed(flashcardUnits) { index, unit ->
                 Button(
-                    onClick = { onUnitSelected(index) },
+                    onClick = {
+                        viewModel.selectUnit(index)
+                        navController.navigate("play_mode") },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
                     Text(text = "Unit ${index + 1}: ${unit.unitName}") // Add 1 to index

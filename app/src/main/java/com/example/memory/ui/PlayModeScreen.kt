@@ -29,6 +29,10 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     val currentSection by viewModel.currentSectionVal.observeAsState()
     val currentUnit by viewModel.currentUnitVal.observeAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadRandomFlashcard()
+    }
+
     val swipeThreshold = 400f // Distance required for a swipe to register
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
@@ -97,7 +101,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
             contentAlignment = Alignment.Center
         ) {
 
-            if (flipped) {
+            if (!flipped) {
                 Text(
                     text = currentFlashcard?.text ?: "Loading...",
                     style = MaterialTheme.typography.headlineMedium,
