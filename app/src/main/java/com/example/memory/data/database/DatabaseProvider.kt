@@ -12,7 +12,9 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "flashcard_database"
-            ).build()
+            )
+                .fallbackToDestructiveMigration() // This line allows for destructive migrations
+                .build()
             INSTANCE = instance
             instance
         }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.memory.viewmodel.PlayCardViewModel
 
 @Composable
 fun StartMenu(navController: NavController) {
@@ -44,11 +45,20 @@ fun StartMenu(navController: NavController) {
         ) {
             Text(text = "Exercise")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {  },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Statistics")
+        }
     }
 }
 
 @Composable
-fun PlayOptionsMenu(navController: NavController) {
+fun PlayOptionsMenu(viewModel: PlayCardViewModel, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +71,10 @@ fun PlayOptionsMenu(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navController.navigate("section_selection_play") },
+            onClick = {
+                viewModel.untilProgressedUnit = false
+                navController.navigate("section_selection_play")
+                      },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Text(text = "Select section")
@@ -70,10 +83,36 @@ fun PlayOptionsMenu(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navController.navigate("play_mode") },
+            onClick = {
+                viewModel.untilProgressedUnit = true
+                navController.navigate("play_mode")
+                      },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Play with all learned cards")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                viewModel.untilProgressedUnit = false
+                navController.navigate("play_mode")
+                      },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Text(text = "Play with all cards")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                navController.navigate("progress_section_selection_play")
+            },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Set progress")
         }
     }
 }

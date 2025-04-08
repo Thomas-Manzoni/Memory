@@ -1,5 +1,6 @@
 package com.example.memory.ui
 
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -7,8 +8,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -21,7 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.memory.viewmodel.PlayCardViewModel
-import kotlin.math.abs
 
 @Composable
 fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
@@ -33,12 +36,15 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         viewModel.loadRandomFlashcard()
     }
 
-    val swipeThreshold = 400f // Distance required for a swipe to register
+    val swipeThreshold = 300f // Distance required for a swipe to register
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) }
 
     var cardId by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+    // Assume your ViewModel exposes a LiveData (or State) for the description
+    cardId = currentFlashcard?.wordId.toString()
 
     var flipped by remember { mutableStateOf(false) }
 
@@ -129,5 +135,79 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
             maxLines = 1,
             overflow = TextOverflow.Visible
         )
+
+        Spacer(modifier = Modifier.height(200.dp))
+
+        Box(
+            modifier = Modifier
+                .offset(x = 80.dp) // Adjust the value to move it slightly right
+                .height(90.dp)
+                .width(150.dp)
+                .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp))
+                .clickable { showDialog = true },
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Show Description")
+        }
+
+        if (showDialog) {
+            // Guard: only fetch if we have a valid cardId
+            if (cardId.isNotBlank() && cardId != "null") {
+                // State to track when the description has been fetched
+                var fetchedDescription by remember { mutableStateOf<String?>(null) }
+                // State to hold the current (editable) description
+                var editedDescription by remember { mutableStateOf("") }
+
+                LaunchedEffect(cardId) {
+                    Log.d("PlayScreen", "Fetching description for cardId: $cardId")
+                    val desc = viewModel.fetchDescription(cardId)
+                    fetchedDescription = desc
+                    // Initialize the editable value with the fetched value.
+                    editedDescription = desc
+                }
+
+                AlertDialog(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(300.dp), // Adjust height as needed
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Flashcard Description") },
+                    text = {
+                        if (fetchedDescription == null) {
+                            // Show a loading text until the description is fetched
+                            Text("Loading...")
+                        } else {
+                            // Display the fetched description in an editable field
+                            OutlinedTextField(
+                                value = editedDescription,
+                                onValueChange = { editedDescription = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.updateDescription(cardId, editedDescription)
+                                showDialog = false
+                            }
+                        ) {
+                            Text("Save")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Close")
+                        }
+                    }
+                )
+            } else {
+                Log.d("PlayScreen", "Invalid cardId: $cardId")
+            }
+        }
     }
 }
