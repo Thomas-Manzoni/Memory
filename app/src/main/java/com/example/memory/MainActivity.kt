@@ -13,6 +13,8 @@ import com.example.memory.ui.PlayOptionsMenu
 import com.example.memory.ui.UnitSelectionMenu
 import com.example.memory.ui.SectionSelectionMenu
 import com.example.memory.ui.StartMenu
+import com.example.memory.ui.theme.ProgressSectionSelectionPlayMenu
+import com.example.memory.ui.theme.ProgressUnitSelectionPlayMenu
 import com.example.memory.ui.theme.SectionSelectionPlayMenu
 import com.example.memory.ui.theme.UnitSelectionPlayMenu
 import com.example.memory.viewmodel.FlashcardViewModel
@@ -34,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("play_options_menu") {
-                    PlayOptionsMenu(navController)
+                    PlayOptionsMenu(viewModelPlay, navController)
                 }
 
                 composable("play_mode") {
@@ -51,6 +53,18 @@ class MainActivity : ComponentActivity() {
                     val sectionIndex = backStackEntry.arguments?.getString("section")?.toIntOrNull() ?: 0
                     viewModelPlay.selectSection(sectionIndex)
                     UnitSelectionPlayMenu(viewModelPlay, navController)
+                }
+
+                composable("progress_section_selection_play") {
+                    ProgressSectionSelectionPlayMenu(viewModelPlay) { selectedSection ->
+                        navController.navigate("progress_unit_selection_play/$selectedSection")
+                    }
+                }
+
+                composable("progress_unit_selection_play/{section}") { backStackEntry ->
+                    val sectionIndex = backStackEntry.arguments?.getString("section")?.toIntOrNull() ?: 0
+                    viewModelPlay.selectSection(sectionIndex)
+                    ProgressUnitSelectionPlayMenu(viewModelPlay, sectionIndex)
                 }
 
                 // Existing Flashcard Navigation

@@ -10,8 +10,6 @@ import java.io.IOException
 
 class FlashcardRepository(private val context: Context) {
 
-    private var cachedData: Map<String, List<Flashcard>>? = null
-
     fun loadFlashcardsFromJson(): List<FlashcardSection> {
         return try {
             val jsonString = context.assets.open("flashcards_with_ids.json")
