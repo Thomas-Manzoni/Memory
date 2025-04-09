@@ -49,7 +49,7 @@ fun StartMenu(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {  },
+            onClick = { navController.navigate("statistics_menu") },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
             Text(text = "Statistics")

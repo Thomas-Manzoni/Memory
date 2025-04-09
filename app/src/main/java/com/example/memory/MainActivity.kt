@@ -17,6 +17,7 @@ import com.example.memory.ui.ProgressSectionSelectionPlayMenu
 import com.example.memory.ui.ProgressUnitSelectionPlayMenu
 import com.example.memory.ui.SectionSelectionPlayMenu
 import com.example.memory.ui.UnitSelectionPlayMenu
+import com.example.memory.ui.StatisticsMenu
 import com.example.memory.viewmodel.PlayCardViewModel
 
 class MainActivity : ComponentActivity() {
@@ -39,6 +40,10 @@ class MainActivity : ComponentActivity() {
 
                 composable("play_mode") {
                     PlayScreen(viewModelPlay)
+                }
+
+                composable("statistics_menu") {
+                    StatisticsMenu(viewModelPlay, navController)
                 }
 
                 composable("section_selection_play") {

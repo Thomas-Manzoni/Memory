@@ -1,0 +1,13 @@
+1) Modify random selection of cards based on previous swipes (e.g. give a standard weight to words and reduce or increase based of swipes and based on preference)
+
+2) Make a mode with only cards previously swiped right / and left
+
+3) Add statistics
+
+4) Add reset swipe statistics X
+
+5) Beautification
+
+6) Add multiple language (and deal with memory?)
+
+7) Add audio function

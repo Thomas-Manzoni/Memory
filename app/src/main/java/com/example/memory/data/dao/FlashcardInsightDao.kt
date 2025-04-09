@@ -12,6 +12,9 @@ interface FlashcardInsightDao {
     @Query("SELECT * FROM flashcard_insights WHERE flashcardId = :id")
     suspend fun getInsight(id: String): FlashcardInsight?
 
+    @Query("SELECT * FROM flashcard_insights")
+    suspend fun getAllInsights(): List<FlashcardInsight>
+
     @Update
     suspend fun updateInsight(insight: FlashcardInsight)
 }

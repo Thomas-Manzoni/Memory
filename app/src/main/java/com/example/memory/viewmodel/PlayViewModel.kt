@@ -60,15 +60,14 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     val newEntriesAlert: LiveData<String?> get() = _newEntriesAlert
 
     suspend fun fetchDescription(flashcardId: String): String {
-            var currentInsight = insightDao.getInsight(flashcardId)
-            if (currentInsight == null) {
-                Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
-                // Create a new record with the default description ("Init")
-                return "Not found"
-            } else {
-                return currentInsight.description
-            }
-        }
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+            return "Not found"
+        } else {
+            return currentInsight.description
+       }
+    }
 
     fun clearNewEntriesAlert() {
         _newEntriesAlert.value = null
@@ -102,10 +101,35 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
             val updatedInsight = currentInsight.copy(
                 timesReviewed = currentInsight.timesReviewed + 1,
-                timesCorrect = currentInsight.timesCorrect - 1,
                 lastReviewed = System.currentTimeMillis()
             )
             insightDao.insertInsight(updatedInsight)
+        }
+    }
+
+    // New Function: Reset all flashcard insights
+    fun resetAllFlashcardSwipes() {
+        viewModelScope.launch {
+            // Retrieve all insights (ensure your DAO has this method)
+            val allInsights = insightDao.getAllInsights()
+            allInsights.forEach { insight ->
+                // Reset timesReviewed and timesCorrect to 0
+                val updatedInsight = insight.copy(
+                    timesReviewed = 0,
+                    timesCorrect = 0
+                )
+                insightDao.insertInsight(updatedInsight)
+            }
+        }
+    }
+
+    suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+            return Pair(0, 0)
+        } else {
+            return Pair(currentInsight.timesReviewed, currentInsight.timesCorrect)
         }
     }
     // -----------------------------------------------------------------------

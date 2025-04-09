@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.memory.viewmodel.PlayCardViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
@@ -36,7 +37,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         viewModel.loadRandomFlashcard()
     }
 
-    val swipeThreshold = 300f // Distance required for a swipe to register
+    val swipeThreshold = 250f // Distance required for a swipe to register
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) }
@@ -47,6 +48,10 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     cardId = currentFlashcard?.wordId.toString()
 
     var flipped by remember { mutableStateOf(false) }
+
+    var fetchedReviewedTimes by remember { mutableStateOf<Int?>(0) }
+    var fetchedCorrectTimes by remember { mutableStateOf<Int?>(0) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Animate swipe back to center when released
     val animatedSwipeOffset by animateFloatAsState(
@@ -95,6 +100,14 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                                 viewModel.loadRandomFlashcard() // Get the returned values
                             }
                             isDragging = false // Triggers animation back to 0f
+                            cardId = currentFlashcard?.wordId.toString()
+                            if (cardId.isNotBlank() && cardId != "null") {
+                                coroutineScope.launch {
+                                    val (reviewCount, correctCount) = viewModel.fetchReviewStats(cardId)
+                                    fetchedReviewedTimes = reviewCount
+                                    fetchedCorrectTimes = correctCount
+                                }
+                            }
                         }
                     )
                 }
@@ -208,6 +221,25 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
             } else {
                 Log.d("PlayScreen", "Invalid cardId: $cardId")
             }
+        }
+
+        Box(
+            modifier = Modifier
+                .offset(x = (-80).dp)
+                .height(90.dp)
+                .width(150.dp)
+                .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (fetchedReviewedTimes != null && fetchedCorrectTimes != null) {
+                    "Reviewed $fetchedReviewedTimes times\nCorrect $fetchedCorrectTimes times"
+                } else {
+                    "Loading..."
+                },
+                color = Color.White, // Optional: ensures visibility
+                textAlign = TextAlign.Center // Optional: centers multi-line text
+            )
         }
     }
 }
