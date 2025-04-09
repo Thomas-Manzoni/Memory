@@ -1,4 +1,4 @@
-package com.example.memory.ui.theme
+package com.example.memory.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
