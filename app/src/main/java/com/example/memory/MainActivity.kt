@@ -13,11 +13,11 @@ import com.example.memory.ui.PlayOptionsMenu
 import com.example.memory.ui.UnitSelectionMenu
 import com.example.memory.ui.SectionSelectionMenu
 import com.example.memory.ui.StartMenu
-import com.example.memory.ui.theme.ProgressSectionSelectionPlayMenu
-import com.example.memory.ui.theme.ProgressUnitSelectionPlayMenu
-import com.example.memory.ui.theme.SectionSelectionPlayMenu
-import com.example.memory.ui.theme.UnitSelectionPlayMenu
-import com.example.memory.viewmodel.FlashcardViewModel
+import com.example.memory.ui.ProgressSectionSelectionPlayMenu
+import com.example.memory.ui.ProgressUnitSelectionPlayMenu
+import com.example.memory.ui.SectionSelectionPlayMenu
+import com.example.memory.ui.UnitSelectionPlayMenu
+import com.example.memory.ui.StatisticsMenu
 import com.example.memory.viewmodel.PlayCardViewModel
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val viewModel: FlashcardViewModel = viewModel()
             val viewModelPlay: PlayCardViewModel = viewModel()
 
             NavHost(navController = navController, startDestination = "start_menu") {
@@ -41,6 +40,10 @@ class MainActivity : ComponentActivity() {
 
                 composable("play_mode") {
                     PlayScreen(viewModelPlay)
+                }
+
+                composable("statistics_menu") {
+                    StatisticsMenu(viewModelPlay, navController)
                 }
 
                 composable("section_selection_play") {
@@ -69,23 +72,23 @@ class MainActivity : ComponentActivity() {
 
                 // Existing Flashcard Navigation
                 composable("section_selection") {
-                    SectionSelectionMenu(viewModel) { selectedSection ->
+                    SectionSelectionMenu(viewModelPlay) { selectedSection ->
                         navController.navigate("unit_selection/$selectedSection")
                     }
                 }
 
                 composable("unit_selection/{section}") { backStackEntry ->
                     val sectionIndex = backStackEntry.arguments?.getString("section")?.toIntOrNull() ?: 0
-                    viewModel.selectSection(sectionIndex)
-                    UnitSelectionMenu(viewModel) { selectedUnit ->
+                    viewModelPlay.selectSectionExercise(sectionIndex)
+                    UnitSelectionMenu(viewModelPlay) { selectedUnit ->
                         navController.navigate("flashcard_screen/$selectedUnit")
                     }
                 }
 
                 composable("flashcard_screen/{unit}") { backStackEntry ->
                     val unitIndex = backStackEntry.arguments?.getString("unit")?.toIntOrNull() ?: 0
-                    viewModel.selectUnit(unitIndex)
-                    FlashcardScreen(viewModel)
+                    viewModelPlay.selectUnitExercise(unitIndex)
+                    FlashcardScreen(viewModelPlay)
                 }
             }
         }

@@ -8,10 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.memory.viewmodel.FlashcardViewModel
+import com.example.memory.viewmodel.PlayCardViewModel
 
 @Composable
-fun UnitSelectionMenu(viewModel: FlashcardViewModel, onUnitSelected: (Int) -> Unit) {
+fun UnitSelectionMenu(viewModel: PlayCardViewModel, onUnitSelected: (Int) -> Unit) {
     val flashcardUnits by viewModel.flashcardUnits.observeAsState(emptyList())
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
@@ -33,7 +33,7 @@ fun UnitSelectionMenu(viewModel: FlashcardViewModel, onUnitSelected: (Int) -> Un
 }
 
 @Composable
-fun SectionSelectionMenu(viewModel: FlashcardViewModel, onSectionSelected: (Int) -> Unit){
+fun SectionSelectionMenu(viewModel: PlayCardViewModel, onSectionSelected: (Int) -> Unit){
     val flashcardSections by viewModel.flashcardSections.observeAsState(emptyList())
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {

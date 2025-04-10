@@ -12,17 +12,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.memory.viewmodel.FlashcardViewModel
 import androidx.compose.runtime.livedata.observeAsState
-
+import com.example.memory.viewmodel.PlayCardViewModel
 
 @Composable
-fun FlashcardScreen(viewModel: FlashcardViewModel = viewModel()) {
+fun FlashcardScreen(viewModel: PlayCardViewModel = viewModel()) {
     val currentFlashcard by viewModel.currentFlashcard.observeAsState()
 
     var flipped by remember { mutableStateOf(false) }
     var showTranslationBox by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier

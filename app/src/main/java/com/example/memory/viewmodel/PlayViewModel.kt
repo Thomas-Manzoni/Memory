@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.memory.data.database.DatabaseProvider
@@ -16,8 +15,6 @@ import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
 import kotlin.random.Random
 import com.example.memory.repository.PreferencesRepository
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class PlayCardViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -26,57 +23,51 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     private val _flashcardSections = MutableLiveData<List<FlashcardSection>>()
     val flashcardSections: LiveData<List<FlashcardSection>> get() = _flashcardSections
-
     private val _flashcardUnits = MutableLiveData<List<FlashcardUnit>>()
     val flashcardUnits: LiveData<List<FlashcardUnit>> get() = _flashcardUnits
-
     private val _currentSection = MutableLiveData<FlashcardSection?>()
     val currentSection: LiveData<FlashcardSection?> get() = _currentSection
-
     private val _currentUnit = MutableLiveData<FlashcardUnit?>()
     val currentUnit: LiveData<FlashcardUnit?> get() = _currentUnit
-
     private val _currentFlashcard = MutableLiveData<Flashcard?>()
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
+    private var currentFlashcardIndex = 0
 
+    // For random selection
     private val _currentSectionVal = MutableLiveData(0)
     val currentSectionVal: LiveData<Int> = _currentSectionVal
     private val _currentUnitVal = MutableLiveData(0)
     val currentUnitVal: LiveData<Int> = _currentUnitVal
 
-    private var numberOfSections = 3
-
+    // Pre-selection
     var preSelectedSection = false
     var preSelectedSectionIndex = 0
     var preSelectedUnit = false
     var preSelectedUnitIndex = 0
 
+    // From progress
     var untilProgressedUnit = false
-    var totUnitsProgressed = 0
+    private var totUnitsProgressed = 0
 
-    var totUnitsLoaded = false
+    // To do the load from repo only when necessary
+    private var totUnitsLoaded = false
 
-
-
-    // Database stuff ----------------------------------------
+    // Database  ----------------------------------------
     private val db = DatabaseProvider.getDatabase(application.applicationContext)
     private val insightDao = db.flashcardInsightDao()
 
     private val _newEntriesAlert = MutableLiveData<String?>()
     val newEntriesAlert: LiveData<String?> get() = _newEntriesAlert
 
-
-
     suspend fun fetchDescription(flashcardId: String): String {
-            var currentInsight = insightDao.getInsight(flashcardId)
-            if (currentInsight == null) {
-                Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
-                // Create a new record with the default description ("Init")
-                return "Not found"
-            } else {
-                return currentInsight.description
-            }
-        }
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+            return "Not found"
+        } else {
+            return currentInsight.description
+       }
+    }
 
     fun clearNewEntriesAlert() {
         _newEntriesAlert.value = null
@@ -93,9 +84,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-
-
-    // I think it's an example of the function
     fun updateCorrectAnswer(flashcardId: String) {
         viewModelScope.launch {
             val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
@@ -113,13 +101,39 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
             val updatedInsight = currentInsight.copy(
                 timesReviewed = currentInsight.timesReviewed + 1,
-                timesCorrect = currentInsight.timesCorrect - 1,
                 lastReviewed = System.currentTimeMillis()
             )
             insightDao.insertInsight(updatedInsight)
         }
     }
+
+    // New Function: Reset all flashcard insights
+    fun resetAllFlashcardSwipes() {
+        viewModelScope.launch {
+            // Retrieve all insights (ensure your DAO has this method)
+            val allInsights = insightDao.getAllInsights()
+            allInsights.forEach { insight ->
+                // Reset timesReviewed and timesCorrect to 0
+                val updatedInsight = insight.copy(
+                    timesReviewed = 0,
+                    timesCorrect = 0
+                )
+                insightDao.insertInsight(updatedInsight)
+            }
+        }
+    }
+
+    suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+            return Pair(0, 0)
+        } else {
+            return Pair(currentInsight.timesReviewed, currentInsight.timesCorrect)
+        }
+    }
     // -----------------------------------------------------------------------
+    // Loading stored progress -----------------------------------------------
 
     private var _progressedSection: Int = 1
     val progressedSection: Int
@@ -164,6 +178,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    // ---------------------------------------------------------------------------
 
     private fun loadFlashcardRepo() {
         val sections = repository.loadFlashcardsFromJson()
@@ -172,6 +187,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     fun loadRandomFlashcard() {
         var selectedUnit: FlashcardUnit? = null
+        val numberOfSections = _flashcardSections.value?.size
 
         if (numberOfSections == 0) return
 
@@ -187,12 +203,12 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 selectedUnit = selectedSection.units[unit - 1]
             }
         } else {
-            var randomSectionIndex = Random.nextInt(0, numberOfSections)
+            var randomSectionIndex = numberOfSections?.let { Random.nextInt(0, it) }
             if (preSelectedSection) {
                 randomSectionIndex = preSelectedSectionIndex
             }
             _currentSectionVal.value = randomSectionIndex
-            val selectedSection = _flashcardSections.value?.get(randomSectionIndex) ?: return
+            val selectedSection = randomSectionIndex?.let { _flashcardSections.value?.get(it) } ?: return
 
             val unitCount = selectedSection.units.size
             if (unitCount == 0) return
@@ -213,7 +229,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _currentFlashcard.value = selectedFlashcard
     }
 
-    fun loadTotUnitProgressed() {
+    private fun loadTotUnitProgressed() {
         totUnitsProgressed = 0
         for (i in 1..progressedSection) {
             if (i == progressedSection) {
@@ -225,7 +241,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 
     private fun selectRandomUnitFromProgress(): Pair<Int, Int>? {
         var randomUnitIndex = Random.nextInt(1, totUnitsProgressed + 1)
@@ -241,7 +256,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         return null
     }
 
-
+    // Pre-selection functions -----------------------------------------------------------
     fun selectSection(index: Int) {
         _flashcardSections.value?.let { units ->
             if (index in units.indices) {
@@ -279,6 +294,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     fun resetUnitSelection() {
         preSelectedUnit = false
     }
+    // -------------------------------------------------------------------------------------
 
     fun updateProgress(newSection: Int, newUnit: Int) {
         viewModelScope.launch {
@@ -286,5 +302,53 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             preferencesRepository.updateUnit(newUnit)
         }
         totUnitsLoaded = false
+    }
+
+    // Exercise functions ------------------------------------------------------------------
+    fun selectUnitExercise(index: Int) {
+        _flashcardUnits.value?.let { units ->
+            if (index in units.indices) {
+                _currentUnit.value = units[index]
+                currentFlashcardIndex = 0
+                showFlashcard()
+            }
+        }
+    }
+
+    fun selectSectionExercise(index: Int) {
+        _flashcardSections.value?.let { units ->
+            if (index in units.indices) {
+                _currentSection.value = units[index]
+                showUnits()
+            }
+        }
+    }
+
+    private fun showFlashcard() {
+        _currentUnit.value?.flashcards?.let { flashcards ->
+            if (flashcards.isNotEmpty()) {
+                _currentFlashcard.value = flashcards[currentFlashcardIndex]
+            }
+        }
+    }
+
+    fun showNextFlashcard() {
+        _currentUnit.value?.flashcards?.let { flashcards ->
+            if (flashcards.isNotEmpty()) {
+                // Increment the index before setting the flashcard
+                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.size
+                _currentFlashcard.value = flashcards[currentFlashcardIndex]
+            }
+        }
+    }
+
+    fun showPrevFlashcard() {
+        _currentUnit.value?.flashcards?.let { flashcards ->
+            if (flashcards.isNotEmpty()) {
+                // Decrement the index before setting the flashcard
+                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.size) % flashcards.size
+                _currentFlashcard.value = flashcards[currentFlashcardIndex]
+            }
+        }
     }
 }
