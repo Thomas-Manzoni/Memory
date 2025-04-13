@@ -13,6 +13,8 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "flashcard_database"
             )
+                .addMigrations(MIGRATION_2_3)
+                .addMigrations(MIGRATION_3_4)
                 .build()
             INSTANCE = instance
             instance

@@ -46,8 +46,8 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
             Button(
                 onClick = {
-                    viewModel.resetAllFlashcardSwipes()
                     coroutineScope.launch {
+                        viewModel.resetAllFlashcardSwipes()
                         snackbarHostState.showSnackbar(
                             message = "Cards swipes reset",
                             duration = SnackbarDuration.Short

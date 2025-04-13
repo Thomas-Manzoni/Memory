@@ -11,3 +11,7 @@
 6) Add multiple language (and deal with memory?)
 
 7) Add audio function
+
+8) Add last swiped direction in database
+
+9) Make it a list in exercise mode X

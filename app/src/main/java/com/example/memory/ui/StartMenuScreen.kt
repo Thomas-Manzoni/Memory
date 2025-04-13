@@ -108,6 +108,18 @@ fun PlayOptionsMenu(viewModel: PlayCardViewModel, navController: NavController) 
 
         Button(
             onClick = {
+                viewModel.randomWeightedMode = true
+                navController.navigate("play_mode")
+            },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        ) {
+            Text(text = "Weighted random selection mode")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
                 navController.navigate("progress_section_selection_play")
             },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)

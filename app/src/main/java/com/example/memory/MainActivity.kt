@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.memory.ui.FlashcardScreen
+import com.example.memory.ui.FlashcardListScreen
 import com.example.memory.ui.PlayScreen
 import com.example.memory.ui.PlayOptionsMenu
 import com.example.memory.ui.UnitSelectionMenu
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 composable("flashcard_screen/{unit}") { backStackEntry ->
                     val unitIndex = backStackEntry.arguments?.getString("unit")?.toIntOrNull() ?: 0
                     viewModelPlay.selectUnitExercise(unitIndex)
-                    FlashcardScreen(viewModelPlay)
+                    FlashcardListScreen(viewModelPlay)
                 }
             }
         }

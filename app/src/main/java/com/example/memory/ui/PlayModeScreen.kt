@@ -13,6 +13,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -52,6 +56,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     var fetchedReviewedTimes by remember { mutableStateOf<Int?>(0) }
     var fetchedCorrectTimes by remember { mutableStateOf<Int?>(0) }
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // Animate swipe back to center when released
     val animatedSwipeOffset by animateFloatAsState(
@@ -66,180 +71,189 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(120.dp))
-
-        // Flashcard Box with Swipe Gesture Detection and Clickable Box
-        Box(
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .height(200.dp)
-                .graphicsLayer(translationX = animatedSwipeOffset) // Use animated offset only for reset
-                .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { isDragging = true },
-                        onDrag = { change, dragAmount ->
-                            change.consume()
-                            swipeOffset += dragAmount.x // Instant movement while dragging
-                        },
-                        onDragEnd = {
-                            if (swipeOffset > swipeThreshold) {
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(120.dp))
+
+            // Flashcard Box with Swipe Gesture Detection and Clickable Box
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .height(200.dp)
+                    .graphicsLayer(translationX = animatedSwipeOffset) // Use animated offset only for reset
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { isDragging = true },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                swipeOffset += dragAmount.x // Instant movement while dragging
+                            },
+                            onDragEnd = {
                                 cardId = currentFlashcard?.wordId.toString()
-                                viewModel.updateCorrectAnswer(flashcardId = cardId)
-                                viewModel.loadRandomFlashcard() // Get the returned values
-                            }
-                            else if(swipeOffset < -swipeThreshold) {
-                                cardId = currentFlashcard?.wordId.toString()
-                                viewModel.updateWrongAnswer(flashcardId = cardId)
-                                viewModel.loadRandomFlashcard() // Get the returned values
-                            }
-                            isDragging = false // Triggers animation back to 0f
-                            cardId = currentFlashcard?.wordId.toString()
-                            if (cardId.isNotBlank() && cardId != "null") {
                                 coroutineScope.launch {
-                                    val (reviewCount, correctCount) = viewModel.fetchReviewStats(cardId)
-                                    fetchedReviewedTimes = reviewCount
-                                    fetchedCorrectTimes = correctCount
+                                    if (swipeOffset > swipeThreshold) {
+                                        viewModel.updateCorrectAnswer(cardId)
+                                        viewModel.loadRandomFlashcard()
+                                    } else if (swipeOffset < -swipeThreshold) {
+                                        viewModel.updateWrongAnswer(cardId)
+                                        viewModel.loadRandomFlashcard()
+                                    }
+
+                                    // Fetch review stats *after* update has been applied
+                                    if (cardId.isNotBlank() && cardId != "null") {
+                                        val (reviewCount, correctCount) = viewModel.fetchReviewStats(
+                                            cardId
+                                        )
+                                        fetchedReviewedTimes = reviewCount
+                                        fetchedCorrectTimes = correctCount
+                                    }
+
+                                    isDragging = false
                                 }
+                            }
+
+                        )
+                    }
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() }, // Custom interaction source
+                        indication = null // Remove the default indication (no ripple effect)
+                    ) {
+                        flipped = !flipped
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+
+                if (!flipped) {
+                    Text(
+                        text = currentFlashcard?.text ?: "Loading...",
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible
+                    )
+                } else {
+                    Text(
+                        text = currentFlashcard?.translations?.joinToString(", ")
+                            ?: "No translations",
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Text(
+                text = "Section: ${currentSection?.plus(1)}  Unit: ${currentUnit?.plus(1)}",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Visible
+            )
+
+            Spacer(modifier = Modifier.height(200.dp))
+
+            Box(
+                modifier = Modifier
+                    .offset(x = 80.dp) // Adjust the value to move it slightly right
+                    .height(90.dp)
+                    .width(150.dp)
+                    .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp))
+                    .clickable { showDialog = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Show Description")
+            }
+
+            if (showDialog) {
+                // Guard: only fetch if we have a valid cardId
+                if (cardId.isNotBlank() && cardId != "null") {
+                    // State to track when the description has been fetched
+                    var fetchedDescription by remember { mutableStateOf<String?>(null) }
+                    // State to hold the current (editable) description
+                    var editedDescription by remember { mutableStateOf("") }
+
+                    LaunchedEffect(cardId) {
+                        Log.d("PlayScreen", "Fetching description for cardId: $cardId")
+                        val desc = viewModel.fetchDescription(cardId)
+                        fetchedDescription = desc
+                        // Initialize the editable value with the fetched value.
+                        editedDescription = desc
+                    }
+
+                    AlertDialog(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(300.dp), // Adjust height as needed
+                        onDismissRequest = { showDialog = false },
+                        title = { Text("Flashcard Description") },
+                        text = {
+                            if (fetchedDescription == null) {
+                                // Show a loading text until the description is fetched
+                                Text("Loading...")
+                            } else {
+                                // Display the fetched description in an editable field
+                                OutlinedTextField(
+                                    value = editedDescription,
+                                    onValueChange = { editedDescription = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    viewModel.updateDescription(cardId, editedDescription)
+                                    showDialog = false
+                                }
+                            ) {
+                                Text("Save")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = { showDialog = false }
+                            ) {
+                                Text("Close")
                             }
                         }
                     )
-                }
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() }, // Custom interaction source
-                    indication = null // Remove the default indication (no ripple effect)
-                ) {
-                    flipped = !flipped
-                },
-            contentAlignment = Alignment.Center
-        ) {
-
-            if (!flipped) {
-                Text(
-                    text = currentFlashcard?.text ?: "Loading...",
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Visible
-                )
-            } else {
-                Text(
-                    text = currentFlashcard?.translations?.joinToString(", ") ?: "No translations",
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Visible
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(60.dp))
-
-        Text(
-            text = "Section: ${currentSection?.plus(1)}  Unit: ${currentUnit?.plus(1)}",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Visible
-        )
-
-        Spacer(modifier = Modifier.height(200.dp))
-
-        Box(
-            modifier = Modifier
-                .offset(x = 80.dp) // Adjust the value to move it slightly right
-                .height(90.dp)
-                .width(150.dp)
-                .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp))
-                .clickable { showDialog = true },
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Show Description")
-        }
-
-        if (showDialog) {
-            // Guard: only fetch if we have a valid cardId
-            if (cardId.isNotBlank() && cardId != "null") {
-                // State to track when the description has been fetched
-                var fetchedDescription by remember { mutableStateOf<String?>(null) }
-                // State to hold the current (editable) description
-                var editedDescription by remember { mutableStateOf("") }
-
-                LaunchedEffect(cardId) {
-                    Log.d("PlayScreen", "Fetching description for cardId: $cardId")
-                    val desc = viewModel.fetchDescription(cardId)
-                    fetchedDescription = desc
-                    // Initialize the editable value with the fetched value.
-                    editedDescription = desc
-                }
-
-                AlertDialog(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(300.dp), // Adjust height as needed
-                    onDismissRequest = { showDialog = false },
-                    title = { Text("Flashcard Description") },
-                    text = {
-                        if (fetchedDescription == null) {
-                            // Show a loading text until the description is fetched
-                            Text("Loading...")
-                        } else {
-                            // Display the fetched description in an editable field
-                            OutlinedTextField(
-                                value = editedDescription,
-                                onValueChange = { editedDescription = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                viewModel.updateDescription(cardId, editedDescription)
-                                showDialog = false
-                            }
-                        ) {
-                            Text("Save")
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = { showDialog = false }
-                        ) {
-                            Text("Close")
-                        }
-                    }
-                )
-            } else {
-                Log.d("PlayScreen", "Invalid cardId: $cardId")
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .offset(x = (-80).dp)
-                .height(90.dp)
-                .width(150.dp)
-                .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = if (fetchedReviewedTimes != null && fetchedCorrectTimes != null) {
-                    "Reviewed $fetchedReviewedTimes times\nCorrect $fetchedCorrectTimes times"
                 } else {
-                    "Loading..."
-                },
-                color = Color.White, // Optional: ensures visibility
-                textAlign = TextAlign.Center // Optional: centers multi-line text
-            )
+                    Log.d("PlayScreen", "Invalid cardId: $cardId")
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .offset(x = (-80).dp)
+                    .height(90.dp)
+                    .width(150.dp)
+                    .background(Color(0xFF5B7356), shape = RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (fetchedReviewedTimes != null && fetchedCorrectTimes != null) {
+                        "Reviewed $fetchedReviewedTimes times\nCorrect $fetchedCorrectTimes times"
+                    } else {
+                        "Loading..."
+                    },
+                    color = Color.White, // Optional: ensures visibility
+                    textAlign = TextAlign.Center // Optional: centers multi-line text
+                )
+            }
         }
     }
 }

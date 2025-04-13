@@ -44,10 +44,15 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     var preSelectedSectionIndex = 0
     var preSelectedUnit = false
     var preSelectedUnitIndex = 0
+    var preSelectedCard = false // for random weighted
+    var preSelectedCardIndex = 0
 
     // From progress
     var untilProgressedUnit = false
     private var totUnitsProgressed = 0
+
+    // Random weighted mode
+    var randomWeightedMode = false
 
     // To do the load from repo only when necessary
     private var totUnitsLoaded = false
@@ -84,44 +89,42 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun updateCorrectAnswer(flashcardId: String) {
-        viewModelScope.launch {
-            val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
-            val updatedInsight = currentInsight.copy(
-                timesReviewed = currentInsight.timesReviewed + 1,
-                timesCorrect = currentInsight.timesCorrect + 1,
-                lastReviewed = System.currentTimeMillis()
-            )
-            insightDao.insertInsight(updatedInsight)
-        }
+    suspend fun updateCorrectAnswer(flashcardId: String) {
+        val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
+        val updatedInsight = currentInsight.copy(
+            timesReviewed = currentInsight.timesReviewed + 1,
+            timesCorrect = currentInsight.timesCorrect + 1,
+            lastReviewed = System.currentTimeMillis(),
+            lastSwipe = -1
+        )
+        insightDao.insertInsight(updatedInsight)
     }
 
-    fun updateWrongAnswer(flashcardId: String) {
-        viewModelScope.launch {
-            val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
-            val updatedInsight = currentInsight.copy(
-                timesReviewed = currentInsight.timesReviewed + 1,
-                lastReviewed = System.currentTimeMillis()
-            )
-            insightDao.insertInsight(updatedInsight)
-        }
+
+
+    suspend fun updateWrongAnswer(flashcardId: String) {
+        val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
+        val updatedInsight = currentInsight.copy(
+            timesReviewed = currentInsight.timesReviewed + 1,
+            lastReviewed = System.currentTimeMillis(),
+            lastSwipe = 1
+        )
+        insightDao.insertInsight(updatedInsight)
     }
 
     // New Function: Reset all flashcard insights
-    fun resetAllFlashcardSwipes() {
-        viewModelScope.launch {
-            // Retrieve all insights (ensure your DAO has this method)
-            val allInsights = insightDao.getAllInsights()
-            allInsights.forEach { insight ->
-                // Reset timesReviewed and timesCorrect to 0
-                val updatedInsight = insight.copy(
-                    timesReviewed = 0,
-                    timesCorrect = 0
-                )
-                insightDao.insertInsight(updatedInsight)
-            }
+    suspend fun resetAllFlashcardSwipes() {
+        val allInsights = insightDao.getAllInsights()
+        val resetInsights = allInsights.map { insight ->
+            insight.copy(
+                timesReviewed = 0,
+                timesCorrect = 0,
+                lastSwipe = 0
+            )
         }
+        insightDao.insertInsights(resetInsights)
     }
+
 
     suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {
         val currentInsight = insightDao.getInsight(flashcardId)
@@ -148,22 +151,45 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
         viewModelScope.launch {
             var newCount = 0
-            _flashcardSections.value?.forEach { section ->
-                section.units.forEach { unit ->
+            var updatedCount = 0
+
+            _flashcardSections.value?.forEachIndexed { sectionIdx, section ->
+                section.units.forEachIndexed { unitIdx, unit ->
                     unit.flashcards.forEach { flashcard ->
                         val existingInsight = insightDao.getInsight(flashcard.wordId)
                         if (existingInsight == null) {
-                            // Insert a default insight record (default description "Init")
-                            insightDao.insertInsight(FlashcardInsight(flashcardId = flashcard.wordId))
+                            insightDao.insertInsight(
+                                FlashcardInsight(
+                                    flashcardId = flashcard.wordId,
+                                    sectionIndex = sectionIdx,
+                                    unitIndex = unitIdx
+                                )
+                            )
                             newCount++
+                        } else {
+                            // If sectionIndex or unitIndex is -1 (or outdated), update them
+                            if (existingInsight.sectionIndex != sectionIdx || existingInsight.unitIndex != unitIdx) {
+                                val updatedInsight = existingInsight.copy(
+                                    sectionIndex = sectionIdx,
+                                    unitIndex = unitIdx
+                                )
+                                insightDao.updateInsight(updatedInsight)
+                                updatedCount++
+                            }
                         }
                     }
                 }
             }
-            if (newCount > 0) {
-                _newEntriesAlert.value = "$newCount new flashcard insights were inserted."
+
+            if (newCount > 0 || updatedCount > 0) {
+                _newEntriesAlert.value = buildString {
+                    if (newCount > 0) append("$newCount new flashcard insights were inserted. ")
+                    if (updatedCount > 0) append("$updatedCount flashcard insights were updated.")
+                }
             }
         }
+
+
 
         viewModelScope.launch {
             preferencesRepository.progressedSectionFlow.collect { section ->
@@ -185,11 +211,34 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _flashcardSections.value = sections
     }
 
-    fun loadRandomFlashcard() {
+    suspend fun loadRandomFlashcard() {
         var selectedUnit: FlashcardUnit? = null
         val numberOfSections = _flashcardSections.value?.size
 
         if (numberOfSections == 0) return
+
+        if (randomWeightedMode){
+            val time1 = System.currentTimeMillis()
+            val triple = selectWeightedRandomCard() ?: return
+            val time2 = System.currentTimeMillis()
+            Log.d("Perf", "load random card took ${time2 - time1} ms")
+            val (sectionIndex, unitIndex, cardIndex) = triple
+
+            // Just like in your full random logic
+            preSelectedSectionIndex = sectionIndex
+            preSelectedUnitIndex = unitIndex
+            preSelectedCardIndex = cardIndex
+
+            _currentSectionVal.value = sectionIndex
+            _currentUnitVal.value = unitIndex
+
+            val selectedSemiRandomSection = _flashcardSections.value?.get(sectionIndex) ?: return
+            val selectedSemiRandomUnit = selectedSemiRandomSection.units.getOrNull(unitIndex) ?: return
+            val selectedSemiRandomFlashcard = selectedSemiRandomUnit.flashcards.getOrNull(cardIndex) ?: return
+
+            _currentFlashcard.value = selectedSemiRandomFlashcard
+            return
+        }
 
         if (untilProgressedUnit){
             if(!totUnitsLoaded){
@@ -255,6 +304,34 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
         return null
     }
+
+    // Weighted-random-selection ---------------------------------------------------------
+
+    suspend fun selectWeightedRandomCard(): Triple<Int, Int, Int>? {
+        val picks = insightDao.debugWeightedPicks()
+        picks.forEach {
+            Log.d("WeightedDebug", "ID: ${it.flashcardId}, rand: ${it.score - it.mistakeWeight}, mistakes: ${it.mistakeWeight}, score: ${it.score}")
+        }
+
+        //val randomFlashcardId = insightDao.getWeightedRandomCardId()
+        val randomFlashcardId = picks.firstOrNull()?.flashcardId ?: return null
+
+        val insight = insightDao.getInsight(randomFlashcardId) ?: return null
+
+        val sectionIndex = insight.sectionIndex
+        val unitIndex = insight.unitIndex
+
+        val section = _flashcardSections.value?.getOrNull(sectionIndex) ?: return null
+        val unit = section.units.getOrNull(unitIndex) ?: return null
+        val flashcardIndex = unit.flashcards.indexOfFirst { it.wordId == randomFlashcardId }
+
+        if (flashcardIndex == -1) return null
+
+        return Triple(sectionIndex, unitIndex, flashcardIndex)
+    }
+
+
+    // -----------------------------------------------------------------------------------
 
     // Pre-selection functions -----------------------------------------------------------
     fun selectSection(index: Int) {
