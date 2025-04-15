@@ -1,8 +1,11 @@
 package com.example.memory.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.memory.viewmodel.PlayCardViewModel
@@ -33,14 +37,24 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color.White)
+                .padding(innerPadding)
                 .padding(16.dp)
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
+        ){
+//            BarChart(
+//                barChartData = BarChartData(
+//                    bars = listOf(
+//                        BarChartData.Bar("A", 20f, Color(0xFF80B986)),
+//                        BarChartData.Bar("B", 40f, Color(0xFF447E78)),
+//                        BarChartData.Bar("C", 60f, Color(0xFFF8C7B1))
+//                    )
+//                ),
+//                labelDrawer = SimpleValueDrawer(drawLocation = SimpleValueDrawer.DrawLocation.Inside)
+//            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

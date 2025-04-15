@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
                 // Start Menu Screen
                 composable("start_menu") {
-                    StartMenu(navController)
+                    StartMenu(viewModelPlay, navController)
                 }
 
                 composable("play_options_menu") {

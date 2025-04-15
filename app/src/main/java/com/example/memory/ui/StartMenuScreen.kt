@@ -20,22 +20,48 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.memory.viewmodel.PlayCardViewModel
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.example.memory.R
+
 
 @Composable
-fun StartMenu(navController: NavController) {
+fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
+    var showPopupMenu by remember { mutableStateOf(false) }
+    var showPopupSectionMenu by remember { mutableStateOf(false) }
+    var showPopupUnitMenu by remember { mutableStateOf(false) }
+    var selectedUnitIndex by remember { mutableStateOf<Int?>(null) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFAD8661)) // <-- Your background color here
+//            .background(Color(0xFFAD8661))
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.background2),
+            contentDescription = null,
+            contentScale = ContentScale.Crop, // or whatever scale you're using
+            alignment = Alignment.BottomCenter,     // 👈 recenter the image
+            modifier = Modifier.matchParentSize()
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -43,19 +69,23 @@ fun StartMenu(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(600.dp))
+            Spacer(modifier = Modifier.height(680.dp))
 
             Button(
-                onClick = { navController.navigate("play_options_menu") },
+                onClick = { showPopupMenu = true },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(60.dp), // 30dp might be too tight for text
+                    .height(60.dp) // 30dp might be too tight for text
+                    .shadow(
+                        elevation = 8.dp, // ⬅️ the strength of the shadow
+                        shape = RoundedCornerShape(8.dp), // ⬅️ match your border shape
+                        clip = false // Optional: if true, content is clipped to the shape
+                    ),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF447E78), // Background color
                     contentColor = Color.White          // Text color
                 ),
-                border = BorderStroke(2.dp, Color.Black)
             ) {
                 Text(text = "Play")
             }
@@ -65,7 +95,7 @@ fun StartMenu(navController: NavController) {
 
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f) // 👈 Same width as the Play button
+                    .fillMaxWidth(0.8f)
             ) {
                 Row(
                     modifier = Modifier
@@ -73,7 +103,9 @@ fun StartMenu(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween // Optional: keeps them flush to edges
                 ) {
                     Button(
-                        onClick = { navController.navigate("section_selection") },
+                        onClick = {
+                            showPopupSectionMenu = true
+                             },
                         modifier = Modifier
                             .weight(1f)
                             .height(40.dp)
@@ -83,7 +115,6 @@ fun StartMenu(navController: NavController) {
                             containerColor = Color(0xFF447E78),
                             contentColor = Color.White
                         ),
-                        border = BorderStroke(2.dp, Color.Black)
                     ) {
                         Text(text = "Exercise", fontSize = 14.sp)
                     }
@@ -99,12 +130,44 @@ fun StartMenu(navController: NavController) {
                             containerColor = Color(0xFF447E78),
                             contentColor = Color.White
                         ),
-                        border = BorderStroke(2.dp, Color.Black)
                     ) {
                         Text(text = "Statistics", fontSize = 14.sp)
                     }
                 }
             }
+        }
+
+        if (showPopupMenu) {
+            PopUpPlay(
+                onDismiss = { showPopupMenu = false },
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        if (showPopupSectionMenu) {
+            PopUpSection(
+                onDismiss = { showPopupSectionMenu = false },
+                onSectionSelected = {
+                    showPopupSectionMenu = false
+                    showPopupUnitMenu = true
+                                    },
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        if (showPopupUnitMenu) {
+            PopUpUnit(
+                onDismiss = { showPopupUnitMenu = false },
+                onUnitSelected = { index ->
+                    selectedUnitIndex = index
+                    showPopupUnitMenu = false
+                    navController.navigate("flashcard_screen/$selectedUnitIndex")
+                                 },
+                navController = navController,
+                viewModel = viewModel
+            )
         }
     }
 }

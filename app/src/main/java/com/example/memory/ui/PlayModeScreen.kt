@@ -1,7 +1,9 @@
 package com.example.memory.ui
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
@@ -24,12 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.memory.R
 import com.example.memory.viewmodel.PlayCardViewModel
 import kotlinx.coroutines.launch
 
@@ -66,6 +72,26 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Flap description
+    var isFlapOpen by remember { mutableStateOf(false) }
+    var fetchedDescription by remember { mutableStateOf<String?>(null) }
+    var isFetching by remember { mutableStateOf(false) }
+    var editedDescription by remember { mutableStateOf("") }
+
+    val flapRotation by animateFloatAsState(
+        targetValue = if (isFlapOpen) 100f else 0f, // rotates upward
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+    )
+
+    LaunchedEffect(isFlapOpen) {
+        if (isFlapOpen && cardId.isNotBlank() && cardId != "null") {
+            isFetching = true
+            val desc = viewModel.fetchDescription(cardId)
+            fetchedDescription = desc
+            isFetching = false
+        }
+    }
+
     // Animate swipe back to center when released
     val animatedSwipeOffset by animateFloatAsState(
         targetValue = if (isDragging) swipeOffset else 0f, // Instantly follows drag, but animates back
@@ -85,8 +111,16 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFAD8661)) // <-- Your background color here
+//                .background(Color(0xFFAD8661)) // <-- Your background color here
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.woodenbackground),
+                contentDescription = null,
+                contentScale = ContentScale.Crop, // or whatever scale you're using
+                alignment = Alignment.BottomCenter,     // 👈 recenter the image
+                modifier = Modifier.matchParentSize()
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -211,80 +245,105 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
 
                         Box(
                             modifier = Modifier
-                                .height(90.dp)
-                                .width(150.dp)
-                                .offset(y = (100).dp)
-                                .background(Color(0xFFB98080), shape = RoundedCornerShape(8.dp))
-                                .clickable { showDialog = true },
-                            contentAlignment = Alignment.Center
+                                .align(Alignment.BottomCenter)
+                                .offset(y = (-80).dp)
+                                .padding(bottom = 16.dp)
+
                         ) {
-                            Text("Description")
-                        }
-
-                        if (showDialog) {
-                            // Guard: only fetch if we have a valid cardId
-                            if (cardId.isNotBlank() && cardId != "null") {
-                                // State to track when the description has been fetched
-                                var fetchedDescription by remember { mutableStateOf<String?>(null) }
-                                // State to hold the current (editable) description
-                                var editedDescription by remember { mutableStateOf("") }
-
-                                LaunchedEffect(cardId) {
-                                    Log.d("PlayScreen", "Fetching description for cardId: $cardId")
-                                    val desc = viewModel.fetchDescription(cardId)
-                                    fetchedDescription = desc
-                                    // Initialize the editable value with the fetched value.
-                                    editedDescription = desc
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .height(100.dp)
+                                    .background(Color(0xFFF8C7B1), RoundedCornerShape(8.dp))
+                                    .clickable{showDialog = true}
+                                    .padding(12.dp)
+                            ) {
+                                when {
+                                    isFetching -> Text("Loading...")
+                                    fetchedDescription != null -> Text(fetchedDescription ?: "")
                                 }
+                            }
+                            if (showDialog) {
+                                if (cardId.isNotBlank() && cardId != "null") {
 
-                                AlertDialog(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.9f)
-                                        .height(300.dp), // Adjust height as needed
-                                    onDismissRequest = { showDialog = false },
-                                    title = { Text("Flashcard Description") },
-                                    text = {
-                                        if (fetchedDescription == null) {
-                                            // Show a loading text until the description is fetched
-                                            Text("Loading...")
-                                        } else {
-                                            // Display the fetched description in an editable field
-                                            OutlinedTextField(
-                                                value = editedDescription,
-                                                onValueChange = { editedDescription = it },
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp)
-                                            )
-                                        }
-                                    },
-                                    confirmButton = {
-                                        Button(
-                                            onClick = {
-                                                viewModel.updateDescription(
-                                                    cardId,
-                                                    editedDescription
-                                                )
-                                                showDialog = false
-                                            }
-                                        ) {
-                                            Text("Save")
-                                        }
-                                    },
-                                    dismissButton = {
-                                        Button(
-                                            onClick = { showDialog = false }
-                                        ) {
-                                            Text("Close")
-                                        }
+                                    LaunchedEffect(cardId) {
+                                        Log.d("PlayScreen", "Fetching description for cardId: $cardId")
+                                        val desc = viewModel.fetchDescription(cardId)
+                                        fetchedDescription = desc
+                                        // Initialize the editable value with the fetched value.
+                                        editedDescription = desc
                                     }
-                                )
-                            } else {
-                                Log.d("PlayScreen", "Invalid cardId: $cardId")
+
+                                    AlertDialog(
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.9f)
+                                            .height(300.dp),
+                                        onDismissRequest = { showDialog = false },
+                                        title = { Text("Edit description") },
+                                        text = {
+                                            if (fetchedDescription == null) {
+                                                // Show a loading text until the description is fetched
+                                                Text("Loading...")
+                                            } else {
+                                                // Display the fetched description in an editable field
+                                                OutlinedTextField(
+                                                    value = editedDescription,
+                                                    onValueChange = { editedDescription = it },
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(200.dp)
+                                                )
+                                            }
+                                        },
+                                        confirmButton = {
+                                            Button(
+                                                onClick = {
+                                                    viewModel.updateDescription(
+                                                        cardId,
+                                                        editedDescription
+                                                    )
+                                                    fetchedDescription = editedDescription
+                                                    showDialog = false
+                                                }
+                                            ) {
+                                                Text("Save")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            Button(
+                                                onClick = { showDialog = false }
+                                            ) {
+                                                Text("Close")
+                                            }
+                                        }
+                                    )
+                                } else {
+                                    Log.d("PlayScreen", "Invalid cardId: $cardId")
+                                }
+                            }
+
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .height(100.dp)
+                                    .graphicsLayer {
+                                        rotationX = flapRotation
+                                        transformOrigin = TransformOrigin(0.5f, 0f)
+                                        cameraDistance = 12f * density
+                                    }
+                                    .border(0.5.dp, Color(0xFF000000), RoundedCornerShape(8.dp))
+                                    .background(Color(0xFFB44C4C), shape = RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        isFlapOpen = !isFlapOpen
+                                        if (!isFlapOpen) fetchedDescription = null
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("Description", color = Color.White)
                             }
                         }
                     }
-
                 }
 
 
