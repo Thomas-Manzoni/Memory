@@ -100,12 +100,11 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         insightDao.insertInsight(updatedInsight)
     }
 
-
-
     suspend fun updateWrongAnswer(flashcardId: String) {
         val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
         val updatedInsight = currentInsight.copy(
             timesReviewed = currentInsight.timesReviewed + 1,
+            timesWrong = currentInsight.timesWrong + 1,
             lastReviewed = System.currentTimeMillis(),
             lastSwipe = 1
         )
@@ -117,13 +116,19 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         val allInsights = insightDao.getAllInsights()
         val resetInsights = allInsights.map { insight ->
             insight.copy(
-                timesReviewed = 0,
                 timesCorrect = 0,
+                timesWrong = 0,
                 lastSwipe = 0
             )
         }
         insightDao.insertInsights(resetInsights)
     }
+
+    suspend fun getTotalSwipes(): Int {
+        val totalReviewed = insightDao.getTotalTimesReviewed() ?: 0
+        return totalReviewed
+    }
+
 
 
     suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {

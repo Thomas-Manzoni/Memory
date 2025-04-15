@@ -52,7 +52,6 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-//            .background(Color(0xFFAD8661))
     ) {
         Image(
             painter = painterResource(id = R.drawable.background2),

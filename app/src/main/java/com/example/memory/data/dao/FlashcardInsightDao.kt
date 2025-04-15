@@ -35,6 +35,9 @@ interface FlashcardInsightDao {
     LIMIT 10
     """)
     suspend fun debugWeightedPicks(): List<DebugPick>
+
+    @Query("SELECT SUM(timesReviewed) FROM flashcard_insights")
+    suspend fun getTotalTimesReviewed(): Int?
 }
 
 data class DebugPick(

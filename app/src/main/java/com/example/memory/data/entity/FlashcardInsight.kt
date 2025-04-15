@@ -8,6 +8,7 @@ data class FlashcardInsight(
     @PrimaryKey val flashcardId: String,
     val timesReviewed: Int = 0,
     val timesCorrect: Int = 0,
+    val timesWrong: Int = 0,
     val lastReviewed: Long = 0L,
     val description: String = "Init",
     val sectionIndex: Int = -1,
