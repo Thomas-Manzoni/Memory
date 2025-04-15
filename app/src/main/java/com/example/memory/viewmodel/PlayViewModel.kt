@@ -211,8 +211,12 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     // ---------------------------------------------------------------------------
 
-    private fun loadFlashcardRepo() {
-        val sections = repository.loadFlashcardsFromJson()
+    fun loadFlashcardRepo(course: String? = null) {
+        val sections = if (course != null)
+            repository.loadFlashcardsFromJson(course)
+        else
+            repository.loadFlashcardsFromJson()
+
         _flashcardSections.value = sections
     }
 

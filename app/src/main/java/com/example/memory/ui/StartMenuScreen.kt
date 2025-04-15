@@ -37,6 +37,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.memory.viewmodel.PlayCardViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.example.memory.R
@@ -47,6 +49,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
     var showPopupMenu by remember { mutableStateOf(false) }
     var showPopupSectionMenu by remember { mutableStateOf(false) }
     var showPopupUnitMenu by remember { mutableStateOf(false) }
+    var showPopupModeLanguage by remember { mutableStateOf(false) }
     var selectedUnitIndex by remember { mutableStateOf<Int?>(null) }
 
     Box(
@@ -61,6 +64,26 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             modifier = Modifier.matchParentSize()
         )
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart) // 👈 top-left corner of the screen
+                .padding(horizontal = 12.dp, vertical = 40.dp)
+//                .background(Color(0xAA000000), shape = RoundedCornerShape(6.dp)) // semi-transparent background
+                .padding(horizontal = 30.dp, vertical = 20.dp)
+        ) {
+            Button(
+                onClick = { showPopupModeLanguage = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF447E78),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(6.dp),
+//                contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
+            ) {
+                Text("Select mode", fontSize = 14.sp)
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,6 +91,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
             Spacer(modifier = Modifier.height(680.dp))
 
             Button(
@@ -164,6 +188,14 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                     showPopupUnitMenu = false
                     navController.navigate("flashcard_screen/$selectedUnitIndex")
                                  },
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        if (showPopupModeLanguage) {
+            PopUpModeSet(
+                onDismiss = { showPopupModeLanguage = false },
                 navController = navController,
                 viewModel = viewModel
             )
