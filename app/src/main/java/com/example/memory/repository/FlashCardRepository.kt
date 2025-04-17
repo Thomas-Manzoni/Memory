@@ -8,13 +8,23 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
 
-class FlashcardRepository(private val context: Context) {
+class FlashcardRepository(
+    private val context: Context,
+    private val defaultCourse: String = "Swedish"
+) {
+    private fun getFileNameFromPack(course: String): String {
+        return when (course) {
+            "Swedish" -> "flashcardsSw_with_ids_upd.json"
+            "Spanish" -> "flashcardsEs_with_ids_upd.json"
+            "German" -> "flashcardsDe_with_ids.json"
+            else -> "flashcards_with_ids.json"
+        }
+    }
 
-    private var cachedData: Map<String, List<Flashcard>>? = null
-
-    fun loadFlashcardsFromJson(): List<FlashcardSection> {
+    fun loadFlashcardsFromJson(course: String = defaultCourse): List<FlashcardSection> {
         return try {
-            val jsonString = context.assets.open("flashcards_with_ids.json")
+            val fileName = getFileNameFromPack(course)
+            val jsonString = context.assets.open(fileName)
                 .bufferedReader().use { it.readText() }
 
             val type = object : TypeToken<Map<String, Map<String, List<Flashcard>>>>() {}.type

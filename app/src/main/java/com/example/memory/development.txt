@@ -1,0 +1,4 @@
+- Modify random selection of cards based on previous swipes (e.g. give a standard weight to words and reduce or increase based of swipes and based on preference)
+- Fix statistics
+- Add audio function
+
