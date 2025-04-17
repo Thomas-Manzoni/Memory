@@ -35,7 +35,8 @@ fun PopUpSection (
     onDismiss: () -> Unit,
     onSectionSelected: (index: Int) -> Unit,
     navController: NavController,
-    viewModel: PlayCardViewModel
+    viewModel: PlayCardViewModel,
+    settingProgress: Boolean
 ) {
     val flashcardSections by viewModel.flashcardSections.observeAsState(emptyList())
 

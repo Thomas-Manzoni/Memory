@@ -40,10 +40,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.example.memory.R
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -52,8 +59,12 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
     var showPopupSectionMenu by remember { mutableStateOf(false) }
     var showPopupUnitMenu by remember { mutableStateOf(false) }
     var showPopupModeLanguage by remember { mutableStateOf(false) }
-    var selectedUnitIndex by remember { mutableStateOf<Int?>(null) }
+    var settingProgress by remember { mutableStateOf(false) }
+    var selectedSectionIndex by remember { mutableIntStateOf(0) }
+    var selectedUnitIndex by remember { mutableIntStateOf(0)}
 
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val alertMessage by viewModel.newEntriesAlert.observeAsState()
 
     if (alertMessage != null) {
@@ -89,7 +100,10 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 .padding(horizontal = 30.dp, vertical = 20.dp)
         ) {
             Button(
-                onClick = { navController.navigate("progress_section_selection_play") },
+                onClick = {
+                    showPopupSectionMenu = true
+                    settingProgress = true
+                          },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF447E78),
                     contentColor = Color.White
@@ -197,6 +211,14 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             }
         }
 
+        SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { data -> Snackbar(snackbarData = data) },
+            modifier = Modifier
+                .align(Alignment.BottomCenter) // ✅ Now valid inside Box
+                .padding(16.dp)
+        )
+
         if (showPopupMenu) {
             PopUpPlay(
                 onDismiss = {
@@ -216,13 +238,16 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 onDismiss = {
                     showPopupSectionMenu = false
                     viewModel.preSelectionMode = false
+                    settingProgress = false
                             },
-                onSectionSelected = {
+                onSectionSelected = { index ->
+                    selectedSectionIndex = index
                     showPopupSectionMenu = false
                     showPopupUnitMenu = true
                                     },
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                settingProgress = settingProgress
             )
         }
 
@@ -231,10 +256,18 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 onDismiss = {
                     showPopupUnitMenu = false
                     viewModel.preSelectionMode = false
+                    settingProgress = false
                             },
                 onUnitSelected = { index ->
                     showPopupUnitMenu = false
-                    if(viewModel.preSelectionMode){
+                    if(settingProgress){
+                        coroutineScope.launch {
+                            viewModel.updateProgress(newSection = selectedSectionIndex, newUnit = selectedUnitIndex)
+                            snackbarHostState.showSnackbar("Progress updated!")
+                        }
+                        settingProgress = false
+                    }
+                    else if(viewModel.preSelectionMode){
                         navController.navigate("play_mode")
                     } else {
                         selectedUnitIndex = index
@@ -252,78 +285,6 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 navController = navController,
                 viewModel = viewModel
             )
-        }
-    }
-}
-
-@Composable
-fun PlayOptionsMenu(viewModel: PlayCardViewModel, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = "Do you want to select a specific section?", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                viewModel.untilProgressedUnit = false
-                navController.navigate("section_selection_play")
-                      },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Text(text = "Select section")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                viewModel.untilProgressedUnit = true
-                navController.navigate("play_mode")
-                      },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Text(text = "Play with all learned cards")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                viewModel.untilProgressedUnit = false
-                navController.navigate("play_mode")
-                      },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Text(text = "Play with all cards")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                viewModel.randomWeightedMode = true
-                navController.navigate("play_mode")
-            },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Text(text = "Weighted random selection mode")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                navController.navigate("progress_section_selection_play")
-            },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-        ) {
-            Text(text = "Set progress")
         }
     }
 }
