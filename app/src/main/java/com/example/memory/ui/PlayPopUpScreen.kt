@@ -28,6 +28,7 @@ import com.example.memory.viewmodel.PlayCardViewModel
 @Composable
 fun PopUpPlay (
     onDismiss: () -> Unit,
+    onTestUnit: () -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel
 ) {
@@ -109,9 +110,10 @@ fun PopUpPlay (
                     ),
                     onClick = {
                         onDismiss()
-                        navController.navigate("progress_section_selection_play")
+                        viewModel.preSelectionMode = true
+                        onTestUnit()
                     }) {
-                    Text("Set progress")
+                    Text("Test unit")
                 }
             }
         }

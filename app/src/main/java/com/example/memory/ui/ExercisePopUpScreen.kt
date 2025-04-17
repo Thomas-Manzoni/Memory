@@ -63,7 +63,6 @@ fun PopUpSection (
                     .width(350.dp)
                     .align(Alignment.Center)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFAD8661))
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -72,7 +71,12 @@ fun PopUpSection (
                     itemsIndexed(flashcardSections) { index, unit ->
                         Button(
                             onClick = {
-                                viewModel.selectSection(index)
+                                if(viewModel.preSelectionMode) {
+                                    viewModel.preSelectedSection = true
+                                    viewModel.preSelectedSectionIndex = index
+                                } else {
+                                    viewModel.selectSection(index)
+                                }
                                 onSectionSelected(index) },
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                         ) {
@@ -111,14 +115,13 @@ fun PopUpUnit (
             )
 
             // Your popup menu content
-
             Column(
                 modifier = Modifier
                     .height(700.dp)
                     .width(350.dp)
                     .align(Alignment.Center)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFAD8661))
+//                    .background(Color(0xFFAD8661))
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -126,7 +129,13 @@ fun PopUpUnit (
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     itemsIndexed(flashcardUnits) { index, unit ->
                         Button(
-                            onClick = { onUnitSelected(index) },
+                            onClick = {
+                                if(viewModel.preSelectionMode) {
+                                    viewModel.preSelectedUnit = true
+                                    viewModel.preSelectedUnitIndex = index
+                                }
+                                onUnitSelected(index)
+                                      },
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                         ) {
                             Text(text = "Unit ${index + 1}: ${unit.unitName}")

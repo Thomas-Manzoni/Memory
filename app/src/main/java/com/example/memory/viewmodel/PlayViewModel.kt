@@ -6,20 +6,22 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.memory.data.dao.FlashcardInsightDao
+import com.example.memory.data.dao.ProgressInsightDao
+import com.example.memory.data.database.AppDatabase
 import kotlinx.coroutines.launch
 import com.example.memory.data.database.DatabaseProvider
 import com.example.memory.data.entity.FlashcardInsight
+import com.example.memory.data.entity.LanguageProgress
 import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
 import kotlin.random.Random
-import com.example.memory.repository.PreferencesRepository
 
 class PlayCardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = FlashcardRepository(application.applicationContext)
-    private val preferencesRepository = PreferencesRepository(application)
 
     private val _flashcardSections = MutableLiveData<List<FlashcardSection>>()
     val flashcardSections: LiveData<List<FlashcardSection>> get() = _flashcardSections
@@ -40,6 +42,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     val currentUnitVal: LiveData<Int> = _currentUnitVal
 
     // Pre-selection
+    var preSelectionMode = false
     var preSelectedSection = false
     var preSelectedSectionIndex = 0
     var preSelectedUnit = false
@@ -58,8 +61,17 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private var totUnitsLoaded = false
 
     // Database  ----------------------------------------
-    private val db = DatabaseProvider.getDatabase(application.applicationContext)
-    private val insightDao = db.flashcardInsightDao()
+    private var db: AppDatabase? = null
+    private var insightDaoVariable: FlashcardInsightDao? = null
+    val insightDao: FlashcardInsightDao
+        get() = insightDaoVariable ?: throw IllegalStateException("DAO not initialized. Call switchCourse() first.")
+
+    private val progressDatabase = DatabaseProvider.getProgressDatabase(getApplication())
+    private val progressDao = progressDatabase.progressInsightDao()
+    private var currentCourse = ""
+
+
+
 
     private val _newEntriesAlert = MutableLiveData<String?>()
     val newEntriesAlert: LiveData<String?> get() = _newEntriesAlert
@@ -78,9 +90,10 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _newEntriesAlert.value = null
     }
 
-    fun updateDescription(flashcardId: String, newDescription: String) {
-        viewModelScope.launch {
-            val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
+    suspend fun updateDescription(flashcardId: String, newDescription: String) {
+        val currentInsight = insightDao.getInsight(flashcardId)
+
+        if (currentInsight != null) {
             val updatedInsight = currentInsight.copy(
                 lastReviewed = System.currentTimeMillis(),
                 description = newDescription
@@ -90,25 +103,49 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     }
 
     suspend fun updateCorrectAnswer(flashcardId: String) {
-        val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
-        val updatedInsight = currentInsight.copy(
-            timesReviewed = currentInsight.timesReviewed + 1,
-            timesCorrect = currentInsight.timesCorrect + 1,
-            lastReviewed = System.currentTimeMillis(),
-            lastSwipe = -1
-        )
-        insightDao.insertInsight(updatedInsight)
+        val currentInsight = insightDao.getInsight(flashcardId)
+        val currentProgress = progressDao.getProgress(languageId = currentCourse)
+
+        if (currentInsight != null) {
+            val updatedInsight = currentInsight.copy(
+                timesReviewed = currentInsight.timesReviewed + 1,
+                timesCorrect = currentInsight.timesCorrect + 1,
+                lastReviewed = System.currentTimeMillis(),
+                lastSwipe = -1
+            )
+            insightDao.insertInsight(updatedInsight)
+        }
+
+        if (currentProgress != null) {
+            val updatedProgress = currentProgress.copy(
+                swipesD1 = currentProgress.swipesD1 + 1,
+                totalSwipes = currentProgress.totalSwipes + 1
+            )
+            progressDao.insertProgress(updatedProgress)
+        }
     }
 
     suspend fun updateWrongAnswer(flashcardId: String) {
-        val currentInsight = insightDao.getInsight(flashcardId) ?: FlashcardInsight(flashcardId)
-        val updatedInsight = currentInsight.copy(
-            timesReviewed = currentInsight.timesReviewed + 1,
-            timesWrong = currentInsight.timesWrong + 1,
-            lastReviewed = System.currentTimeMillis(),
-            lastSwipe = 1
-        )
-        insightDao.insertInsight(updatedInsight)
+        val currentInsight = insightDao.getInsight(flashcardId)
+        val currentProgress = progressDao.getProgress(languageId = currentCourse)
+
+        if (currentInsight != null) {
+            val updatedInsight = currentInsight.copy(
+                timesReviewed = currentInsight.timesReviewed + 1,
+                timesWrong = currentInsight.timesWrong + 1,
+                lastReviewed = System.currentTimeMillis(),
+                lastSwipe = 1
+            )
+            insightDao.insertInsight(updatedInsight)
+        }
+
+        if (currentProgress != null) {
+            val updatedProgress = currentProgress.copy(
+                swipesD1 = currentProgress.swipesD1 + 1,
+                totalSwipes = currentProgress.totalSwipes + 1
+            )
+            progressDao.insertProgress(updatedProgress)
+        }
     }
 
     // New Function: Reset all flashcard insights
@@ -124,12 +161,14 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         insightDao.insertInsights(resetInsights)
     }
 
-    suspend fun getTotalSwipes(): Int {
-        val totalReviewed = insightDao.getTotalTimesReviewed() ?: 0
-        return totalReviewed
+    suspend fun resetAllFlashcard() {
+        insightDao.deleteAllInsights()
     }
 
-
+    suspend fun getTotalSwipes(): Int {
+        val totalReviewed = progressDao.getTotalSwipes(languageId = currentCourse) ?: 0
+        return totalReviewed
+    }
 
     suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {
         val currentInsight = insightDao.getInsight(flashcardId)
@@ -152,62 +191,96 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         get() = _progressedUnit
 
     init {
-        loadFlashcardRepo() // Loads flashcard sections into _flashcardSections
+        switchCourse(courseId = "Swedish")
+    }
+
+
+    fun switchCourse(courseId: String) {
+        loadFlashcardRepo(course = courseId)
+        currentCourse = courseId
+        val dbName = "flashcard_${courseId}.db"
+        db = DatabaseProvider.getDatabase(getApplication(), dbName)
+        insightDaoVariable = db?.flashcardInsightDao()
 
         viewModelScope.launch {
-            var newCount = 0
-            var updatedCount = 0
+            populateFlashcardInsightsIfNeeded()
+            populateAndLoadProgressDatabase(course = courseId)
+        }
+    }
 
-            _flashcardSections.value?.forEachIndexed { sectionIdx, section ->
-                section.units.forEachIndexed { unitIdx, unit ->
-                    unit.flashcards.forEach { flashcard ->
-                        val existingInsight = insightDao.getInsight(flashcard.wordId)
-                        if (existingInsight == null) {
-                            insightDao.insertInsight(
-                                FlashcardInsight(
-                                    flashcardId = flashcard.wordId,
-                                    sectionIndex = sectionIdx,
-                                    unitIndex = unitIdx
-                                )
+    private suspend fun populateAndLoadProgressDatabase(course: String) {
+        try {
+            // Try to get the existing progress for this language
+            val existingProgress = progressDao.getProgress(course)
+
+            if (existingProgress == null) {
+                // No progress entry exists for this language, create a new one with default values
+                Log.d("PlayCardViewModel", "No progress record found for $course; creating default entry")
+                val newProgress = LanguageProgress(
+                    languageId = course,
+                    // All other fields will use the default values from the entity class
+                )
+                progressDao.insertProgress(newProgress)
+
+                // Now we can update our UI or ViewModel state with the default values
+                _progressedSection = 1
+                _progressedUnit = 1
+                // Reset any other progress tracking variables to defaults
+            } else {
+                // Progress entry exists, update our UI or ViewModel state with the saved values
+                Log.d("PlayCardViewModel", "Found existing progress for $course: Section ${existingProgress.progressedSection}, Unit ${existingProgress.progressedUnit}")
+                _progressedSection = existingProgress.progressedSection
+                _progressedUnit = existingProgress.progressedUnit
+                // Update any other progress tracking variables
+            }
+        } catch (e: Exception) {
+            Log.e("PlayCardViewModel", "Error loading progress data for $course", e)
+            // Fallback to default values if database operation fails
+            _progressedSection = 1
+            _progressedUnit = 1
+        }
+    }
+
+    private suspend fun populateFlashcardInsightsIfNeeded() {
+        var newCount = 0
+        var updatedCount = 0
+
+        _flashcardSections.value?.forEachIndexed { sectionIdx, section ->
+            section.units.forEachIndexed { unitIdx, unit ->
+                unit.flashcards.forEach { flashcard ->
+                    val existingInsight = insightDao.getInsight(flashcard.wordId)
+                    if (existingInsight == null) {
+                        insightDao.insertInsight(
+                            FlashcardInsight(
+                                flashcardId = flashcard.wordId,
+                                sectionIndex = sectionIdx,
+                                unitIndex = unitIdx
                             )
-                            newCount++
-                        } else {
-                            // If sectionIndex or unitIndex is -1 (or outdated), update them
-                            if (existingInsight.sectionIndex != sectionIdx || existingInsight.unitIndex != unitIdx) {
-                                val updatedInsight = existingInsight.copy(
-                                    sectionIndex = sectionIdx,
-                                    unitIndex = unitIdx
-                                )
-                                insightDao.updateInsight(updatedInsight)
-                                updatedCount++
-                            }
-                        }
+                        )
+                        newCount++
+                    } else if (
+                        existingInsight.sectionIndex != sectionIdx ||
+                        existingInsight.unitIndex != unitIdx
+                    ) {
+                        val updatedInsight = existingInsight.copy(
+                            sectionIndex = sectionIdx,
+                            unitIndex = unitIdx
+                        )
+                        insightDao.updateInsight(updatedInsight)
+                        updatedCount++
                     }
                 }
             }
-
-            if (newCount > 0 || updatedCount > 0) {
-                _newEntriesAlert.value = buildString {
-                    if (newCount > 0) append("$newCount new flashcard insights were inserted. ")
-                    if (updatedCount > 0) append("$updatedCount flashcard insights were updated.")
-                }
-            }
         }
 
-
-
-        viewModelScope.launch {
-            preferencesRepository.progressedSectionFlow.collect { section ->
-                _progressedSection = section
-            }
-        }
-        // Collect the progressed unit Flow continuously.
-        viewModelScope.launch {
-            preferencesRepository.progressedUnitFlow.collect { unit ->
-                _progressedUnit = unit
+        if (newCount > 0 || updatedCount > 0) {
+            _newEntriesAlert.value = buildString {
+                if (newCount > 0) append("$newCount new flashcard insights were inserted. ")
+                if (updatedCount > 0) append("$updatedCount flashcard insights were updated.")
             }
         }
     }
+
 
     // ---------------------------------------------------------------------------
 
@@ -255,10 +328,10 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 totUnitsLoaded = true
             }
             selectRandomUnitFromProgress()?.let { (section, unit) ->
-                _currentSectionVal.value = section - 1
-                _currentUnitVal.value = unit - 1
-                val selectedSection = _flashcardSections.value?.get(section - 1) ?: return
-                selectedUnit = selectedSection.units[unit - 1]
+                _currentSectionVal.value = section
+                _currentUnitVal.value = unit
+                val selectedSection = _flashcardSections.value?.get(section) ?: return
+                selectedUnit = selectedSection.units[unit]
             }
         } else {
             var randomSectionIndex = numberOfSections?.let { Random.nextInt(0, it) }
@@ -289,11 +362,11 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     private fun loadTotUnitProgressed() {
         totUnitsProgressed = 0
-        for (i in 1..progressedSection) {
+        for (i in 0..progressedSection) {
             if (i == progressedSection) {
                 totUnitsProgressed += progressedUnit
             } else {
-                val momentarilySelectedSection = _flashcardSections.value?.get(i - 1) ?: return
+                val momentarilySelectedSection = _flashcardSections.value?.get(i) ?: return
                 val unitCount = momentarilySelectedSection.units.size
                 totUnitsProgressed += unitCount
             }
@@ -301,11 +374,16 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun selectRandomUnitFromProgress(): Pair<Int, Int>? {
-        var randomUnitIndex = Random.nextInt(1, totUnitsProgressed + 1)
-        for (i in 1..progressedSection) {
-            val momentarilySelectedSection = _flashcardSections.value?.get(i-1)
+        var randomUnitIndex = if (totUnitsProgressed > 0) {
+            Random.nextInt(0, totUnitsProgressed + 1) // The +1 is not because of wrongly indexed units/sections but on how the random works 0,1 will return only 0
+        } else {
+            // Handle the edge case — maybe return 0 or throw a custom exception
+            0
+        }
+        for (i in 0..progressedSection) {
+            val momentarilySelectedSection = _flashcardSections.value?.get(i)
             val unitCount = momentarilySelectedSection?.units?.size
-            if (randomUnitIndex <= unitCount!!) {
+            if (randomUnitIndex < unitCount!!) {
                 return Pair(i, randomUnitIndex)
             } else {
                 randomUnitIndex -= unitCount
@@ -382,11 +460,17 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     }
     // -------------------------------------------------------------------------------------
 
-    fun updateProgress(newSection: Int, newUnit: Int) {
-        viewModelScope.launch {
-            preferencesRepository.updateSection(newSection)
-            preferencesRepository.updateUnit(newUnit)
+    suspend fun updateProgress(newSection: Int, newUnit: Int) {
+        val currentProgress = progressDao.getProgress(languageId = currentCourse)
+        if (currentProgress != null) {
+            val updatedProgress = currentProgress.copy(
+                progressedSection = newSection,
+                progressedUnit = newUnit
+            )
+            progressDao.insertProgress(updatedProgress)
         }
+        _progressedSection = newSection
+        _progressedUnit = newUnit
         totUnitsLoaded = false
     }
 

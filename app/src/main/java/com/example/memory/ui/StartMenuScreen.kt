@@ -39,6 +39,8 @@ import com.example.memory.viewmodel.PlayCardViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.AlertDialog
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.example.memory.R
@@ -52,6 +54,21 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
     var showPopupModeLanguage by remember { mutableStateOf(false) }
     var selectedUnitIndex by remember { mutableStateOf<Int?>(null) }
 
+    val alertMessage by viewModel.newEntriesAlert.observeAsState()
+
+    if (alertMessage != null) {
+        AlertDialog(
+            onDismissRequest = { /* Dismiss the dialog and reset the alert, e.g.: */ viewModel.clearNewEntriesAlert() },
+            title = { Text("New Entries Detected") },
+            text = { Text(alertMessage ?: "") },
+            confirmButton = {
+                Button(onClick = { viewModel.clearNewEntriesAlert() }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -63,6 +80,26 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             alignment = Alignment.BottomCenter,     // 👈 recenter the image
             modifier = Modifier.matchParentSize()
         )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd) // 👈 top-left corner of the screen
+                .padding(horizontal = 12.dp, vertical = 40.dp)
+//                .background(Color(0xAA000000), shape = RoundedCornerShape(6.dp)) // semi-transparent background
+                .padding(horizontal = 30.dp, vertical = 20.dp)
+        ) {
+            Button(
+                onClick = { navController.navigate("progress_section_selection_play") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF447E78),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(6.dp),
+//                contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
+            ) {
+                Text("Set progress", fontSize = 14.sp)
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -80,7 +117,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 shape = RoundedCornerShape(6.dp),
 //                contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
             ) {
-                Text("Select mode", fontSize = 14.sp)
+                Text("Select course", fontSize = 14.sp)
             }
         }
 
@@ -162,7 +199,13 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
         if (showPopupMenu) {
             PopUpPlay(
-                onDismiss = { showPopupMenu = false },
+                onDismiss = {
+                    showPopupMenu = false
+                    viewModel.untilProgressedUnit = false
+                    viewModel.randomWeightedMode = false
+                    viewModel.preSelectionMode = false
+                            },
+                onTestUnit = { showPopupSectionMenu = true },
                 navController = navController,
                 viewModel = viewModel
             )
@@ -170,7 +213,10 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
         if (showPopupSectionMenu) {
             PopUpSection(
-                onDismiss = { showPopupSectionMenu = false },
+                onDismiss = {
+                    showPopupSectionMenu = false
+                    viewModel.preSelectionMode = false
+                            },
                 onSectionSelected = {
                     showPopupSectionMenu = false
                     showPopupUnitMenu = true
@@ -182,11 +228,18 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
         if (showPopupUnitMenu) {
             PopUpUnit(
-                onDismiss = { showPopupUnitMenu = false },
-                onUnitSelected = { index ->
-                    selectedUnitIndex = index
+                onDismiss = {
                     showPopupUnitMenu = false
-                    navController.navigate("flashcard_screen/$selectedUnitIndex")
+                    viewModel.preSelectionMode = false
+                            },
+                onUnitSelected = { index ->
+                    showPopupUnitMenu = false
+                    if(viewModel.preSelectionMode){
+                        navController.navigate("play_mode")
+                    } else {
+                        selectedUnitIndex = index
+                        navController.navigate("flashcard_screen/$selectedUnitIndex")
+                    }
                                  },
                 navController = navController,
                 viewModel = viewModel

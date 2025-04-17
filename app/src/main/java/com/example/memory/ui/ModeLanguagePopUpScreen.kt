@@ -87,6 +87,7 @@ fun PopUpModeSet (
                         contentColor = Color.White
                     ),
                     onClick = {
+                        viewModel.switchCourse(courseId = "Swedish")
                         onDismiss()
                     }) {
                     Text("Swedish")
@@ -104,6 +105,7 @@ fun PopUpModeSet (
                         contentColor = Color.White
                     ),
                     onClick = {
+                        viewModel.switchCourse(courseId = "Spanish")
                         onDismiss()
                     }) {
                     Text("Spanish")

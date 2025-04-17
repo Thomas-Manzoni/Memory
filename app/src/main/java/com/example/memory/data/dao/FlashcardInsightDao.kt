@@ -18,6 +18,9 @@ interface FlashcardInsightDao {
     @Query("SELECT * FROM flashcard_insights")
     suspend fun getAllInsights(): List<FlashcardInsight>
 
+    @Query("DELETE FROM flashcard_insights")
+    suspend fun deleteAllInsights()
+
     @Update
     suspend fun updateInsight(insight: FlashcardInsight)
 

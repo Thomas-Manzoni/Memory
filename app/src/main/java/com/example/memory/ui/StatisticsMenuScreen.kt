@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,7 +46,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    val totalSwipes = remember { mutableStateOf(0) }
+    val totalSwipes = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         totalSwipes.value = viewModel.getTotalSwipes()
@@ -119,6 +120,23 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Reset swipes record")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        viewModel.resetAllFlashcard()
+                        snackbarHostState.showSnackbar(
+                            message = "Cards reset",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Reset cards")
             }
 
             Spacer(modifier = Modifier.height(16.dp))

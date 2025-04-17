@@ -6,6 +6,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.memory.data.entity.FlashcardInsight
 import com.example.memory.data.dao.FlashcardInsightDao
+import com.example.memory.data.dao.ProgressInsightDao
+import com.example.memory.data.entity.LanguageProgress
 
 @Database(entities = [FlashcardInsight::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
@@ -29,4 +31,9 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE flashcard_insights ADD COLUMN timesWrong INTEGER NOT NULL DEFAULT 0")
     }
+}
+
+@Database(entities = [LanguageProgress::class], version = 1)
+abstract class ProgressDatabase : RoomDatabase() {
+    abstract fun progressInsightDao(): ProgressInsightDao
 }

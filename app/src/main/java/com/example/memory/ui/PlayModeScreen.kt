@@ -31,9 +31,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.memory.R
 import com.example.memory.viewmodel.PlayCardViewModel
@@ -225,22 +229,30 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                     ) {
 
                         if (!flipped) {
-                            Text(
-                                text = currentFlashcard?.text ?: "Loading...",
-                                modifier = Modifier.offset(y = (-80).dp),
-                                style = MaterialTheme.typography.headlineMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Visible
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.8f)   // Limit width to 80% of the card
+                                    .height(200.dp)
+                                    .offset(y = (-100).dp), // Keep same vertical offset
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AutoResizingText(
+                                    text = currentFlashcard?.text ?: "Loading..."
+                                )
+                            }
                         } else {
-                            Text(
-                                text = currentFlashcard?.translations?.joinToString(", ")
-                                    ?: "No translations",
-                                modifier = Modifier.offset(y = (-80).dp),
-                                style = MaterialTheme.typography.headlineMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Visible
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.8f)
+                                    .height(200.dp)
+//                                    .background(Color.Black.copy(alpha = 0.3f)) //debug
+                                    .offset(y = (-100).dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AutoResizingText(
+                                    text = currentFlashcard?.translations?.joinToString(", ") ?: "No translations"
+                                )
+                            }
                         }
 
                         Box(
@@ -298,10 +310,12 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                                         confirmButton = {
                                             Button(
                                                 onClick = {
-                                                    viewModel.updateDescription(
-                                                        cardId,
-                                                        editedDescription
-                                                    )
+                                                    coroutineScope.launch {
+                                                        viewModel.updateDescription(
+                                                            cardId,
+                                                            editedDescription
+                                                        )
+                                                    }
                                                     fetchedDescription = editedDescription
                                                     showDialog = false
                                                 }
@@ -383,3 +397,32 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         }
     }
 }
+
+@Composable
+fun AutoResizingText(
+    text: String,
+    modifier: Modifier = Modifier,
+    maxFontSize: TextUnit = 40.sp,
+    minFontSize: TextUnit = 6.sp,
+    maxLines: Int = 5,
+    style: TextStyle = MaterialTheme.typography.headlineMedium
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val width = maxWidth
+        val calculatedFontSize = remember(text, width) {
+            // Simple heuristic: shrink font based on text length and available width
+            val lengthFactor = text.length / 20f
+            val shrinkFactor = (1f / (1f + lengthFactor)).coerceIn(0.5f, 1f)
+            val size = (maxFontSize.value * shrinkFactor).coerceAtLeast(minFontSize.value)
+            size.sp
+        }
+
+        Text(
+            text = text,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis,
+            style = style.copy(fontSize = calculatedFontSize)
+        )
+    }
+}
+

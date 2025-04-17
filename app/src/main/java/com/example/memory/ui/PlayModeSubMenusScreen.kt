@@ -170,14 +170,13 @@ fun ProgressUnitSelectionPlayMenu(viewModel: PlayCardViewModel, progressSectionI
                 itemsIndexed(flashcardUnits) { index, unit ->
                     Button(
                         onClick = {
-                            // Update stored progress
-                            viewModel.updateProgress(newSection = progressSectionIndex, newUnit = index)
-                            // Launch a coroutine to show the snackbar
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = "Progress updated",
-                                    duration = SnackbarDuration.Short
-                                )
+                            viewModel.updateProgress(newSection = progressSectionIndex, newUnit = index)
+
+                            snackbarHostState.showSnackbar(
+                                message = "Progress updated",
+                                duration = SnackbarDuration.Short
+                            )
                             }
                         },
                         modifier = Modifier
