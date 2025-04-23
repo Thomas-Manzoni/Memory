@@ -13,5 +13,14 @@ interface ProgressInsightDao {
 
     @Query("SELECT totalSwipes FROM progress_insights WHERE languageId = :languageId")
     suspend fun getTotalSwipes(languageId: String): Int?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM progress_insights WHERE languageId = :languageId)")
+    suspend fun hasProgressForLanguage(languageId: String): Boolean
+
+    @Query("SELECT * FROM progress_insights")
+    suspend fun getAllProgress(): List<LanguageProgress>
+
+    @Update
+    suspend fun updateProgress(progress: LanguageProgress)
 }
 

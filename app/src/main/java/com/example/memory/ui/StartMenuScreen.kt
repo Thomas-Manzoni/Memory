@@ -59,6 +59,9 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
     var showPopupSectionMenu by remember { mutableStateOf(false) }
     var showPopupUnitMenu by remember { mutableStateOf(false) }
     var showPopupModeLanguage by remember { mutableStateOf(false) }
+    var showPopupExerciseMenu by remember { mutableStateOf(false) }
+    var showPopupCategories by remember { mutableStateOf(false) }
+    var showPopupGrammarCategories by remember { mutableStateOf(false) }
     var settingProgress by remember { mutableStateOf(false) }
     var selectedSectionIndex by remember { mutableIntStateOf(0) }
     var selectedUnitIndex by remember { mutableIntStateOf(0)}
@@ -123,7 +126,10 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 .padding(horizontal = 30.dp, vertical = 20.dp)
         ) {
             Button(
-                onClick = { showPopupModeLanguage = true },
+                onClick = {
+                    showPopupModeLanguage = true
+                    viewModel.preSelectionMode = false
+                          },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF447E78),
                     contentColor = Color.White
@@ -178,7 +184,8 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 ) {
                     Button(
                         onClick = {
-                            showPopupSectionMenu = true
+                            showPopupExerciseMenu = true
+                            viewModel.preSelectionMode = false
                              },
                         modifier = Modifier
                             .weight(1f)
@@ -215,7 +222,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             hostState = snackbarHostState,
             snackbar = { data -> Snackbar(snackbarData = data) },
             modifier = Modifier
-                .align(Alignment.BottomCenter) // ✅ Now valid inside Box
+                .align(Alignment.BottomCenter)
                 .padding(16.dp)
         )
 
@@ -233,9 +240,77 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             )
         }
 
+        if (showPopupExerciseMenu) {
+            PopUpExerciseOptions(
+                onDismiss = {
+                    showPopupExerciseMenu = false
+                    showPopupSectionMenu = false
+                    viewModel.preSelectionMode = false
+                    settingProgress = false
+                },
+                onSectionUnitModeSelected = {
+                    showPopupExerciseMenu = false
+                    showPopupSectionMenu = true
+                },
+                onCategoryModeSelected = {
+                    showPopupExerciseMenu = false
+                    showPopupCategories = true
+                },
+                onGrammarCategoryModeSelected = {
+                    showPopupExerciseMenu = false
+                    showPopupGrammarCategories = true
+                },
+                navController = navController,
+                viewModel = viewModel,
+            )
+        }
+
+        if (showPopupCategories) {
+            PopUpCategories(
+                onDismiss = {
+                    showPopupCategories = false
+                    showPopupExerciseMenu = false
+                    showPopupSectionMenu = false
+                    viewModel.preSelectionMode = false
+                    settingProgress = false
+                },
+                onCategorySelected = { categoryName ->
+                    coroutineScope.launch {
+                        viewModel.loadCategoryCardsToDisplay(categoryName)
+                        showPopupCategories = false
+                        navController.navigate("category_flashcard_screen/$categoryName")
+                    }
+                },
+                navController = navController,
+                viewModel = viewModel,
+            )
+        }
+
+        if (showPopupGrammarCategories) {
+            PopUpGrammarCategories(
+                onDismiss = {
+                    showPopupGrammarCategories = false
+                    showPopupExerciseMenu = false
+                    showPopupSectionMenu = false
+                    viewModel.preSelectionMode = false
+                    settingProgress = false
+                },
+                onCategorySelected = { categoryName ->
+                    coroutineScope.launch {
+                        viewModel.loadCategoryCardsToDisplay(categoryName)
+                        showPopupCategories = false
+                        navController.navigate("category_flashcard_screen/$categoryName")
+                    }
+                },
+                navController = navController,
+                viewModel = viewModel,
+            )
+        }
+
         if (showPopupSectionMenu) {
             PopUpSection(
                 onDismiss = {
+                    showPopupExerciseMenu = false
                     showPopupSectionMenu = false
                     viewModel.preSelectionMode = false
                     settingProgress = false
@@ -262,7 +337,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                     showPopupUnitMenu = false
                     if(settingProgress){
                         coroutineScope.launch {
-                            viewModel.updateProgress(newSection = selectedSectionIndex, newUnit = selectedUnitIndex)
+                            viewModel.updateProgress(newSection = selectedSectionIndex, newUnit = index)
                             snackbarHostState.showSnackbar("Progress updated!")
                         }
                         settingProgress = false

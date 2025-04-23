@@ -3,7 +3,9 @@ package com.example.memory.model
 data class Flashcard(
     val text: String,
     val translations: List<String>,
-    val wordId: String
+    val wordId: String,
+    val categories: List<String>,
+    val grammar: List<String>
 )
 
 data class FlashcardUnit(

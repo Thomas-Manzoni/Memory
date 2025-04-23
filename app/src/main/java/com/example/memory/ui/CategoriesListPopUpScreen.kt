@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,14 +30,13 @@ import androidx.navigation.NavController
 import com.example.memory.viewmodel.PlayCardViewModel
 
 @Composable
-fun PopUpExerciseOptions (
+fun PopUpCategories (
     onDismiss: () -> Unit,
-    onSectionUnitModeSelected: () -> Unit,
-    onCategoryModeSelected: () -> Unit,
-    onGrammarCategoryModeSelected: () -> Unit,
+    onCategorySelected: (categoryName: String) -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel,
 ) {
+
     Dialog(
         onDismissRequest = { onDismiss() },
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -54,6 +52,8 @@ fun PopUpExerciseOptions (
                     .background(Color.Black.copy(alpha = 0.3f))
                     .clickable { onDismiss() }
             )
+
+            // Your popup menu content
 
             // Your popup menu content
             Column(
@@ -78,9 +78,10 @@ fun PopUpExerciseOptions (
                         contentColor = Color.White
                     ),
                     onClick = {
-                        onSectionUnitModeSelected()
-                    }) {
-                    Text("Duo Sections & Units")
+                        onCategorySelected("food")
+                    })
+                {
+                    Text("Food")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -95,9 +96,9 @@ fun PopUpExerciseOptions (
                         contentColor = Color.White
                     ),
                     onClick = {
-                        onCategoryModeSelected()
+                        onCategorySelected("animals")
                     }) {
-                    Text("Categories")
+                    Text("Animals")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -112,9 +113,60 @@ fun PopUpExerciseOptions (
                         contentColor = Color.White
                     ),
                     onClick = {
-                        onGrammarCategoryModeSelected()
+                        onCategorySelected("hobbies")
                     }) {
-                    Text("Grammar categories")
+                    Text("Hobbies")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("house & home")
+                    }) {
+                    Text("House & Home")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("family & relationships")
+                    }) {
+                    Text("Family & Relationships")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("profession & workplace")
+                    }) {
+                    Text("Profession & Workplace")
                 }
             }
         }
@@ -122,14 +174,12 @@ fun PopUpExerciseOptions (
 }
 
 @Composable
-fun PopUpSection (
+fun PopUpGrammarCategories (
     onDismiss: () -> Unit,
-    onSectionSelected: (index: Int) -> Unit,
+    onCategorySelected: (categoryName: String) -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel,
-    settingProgress: Boolean
 ) {
-    val flashcardSections by viewModel.flashcardSections.observeAsState(emptyList())
 
     Dialog(
         onDismissRequest = { onDismiss() },
@@ -149,85 +199,66 @@ fun PopUpSection (
 
             // Your popup menu content
 
+            // Your popup menu content
             Column(
                 modifier = Modifier
-                    .height(700.dp)
+                    .height(500.dp)
                     .width(350.dp)
                     .align(Alignment.Center)
                     .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Black.copy(alpha = 0f))
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    itemsIndexed(flashcardSections) { index, unit ->
-                        Button(
-                            onClick = {
-                                viewModel.selectSection(index)
-                                onSectionSelected(index) },
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                        ) {
-                            Text(text = unit.sectionName)
-                        }
-                    }
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("verb")
+                    }) {
+                    Text("Verbs")
                 }
-            }
-        }
-    }
-}
 
-@Composable
-fun PopUpUnit (
-    onDismiss: () -> Unit,
-    onUnitSelected: (index: Int) -> Unit,
-    navController: NavController,
-    viewModel: PlayCardViewModel
-) {
-    val flashcardUnits by viewModel.flashcardUnits.observeAsState(emptyList())
+                Spacer(modifier = Modifier.height(12.dp))
 
-    Dialog(
-        onDismissRequest = { onDismiss() },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            // Dimmed clickable background
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable { onDismiss() }
-            )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("adjective")
+                    }) {
+                    Text("Adjectives")
+                }
 
-            // Your popup menu content
-            Column(
-                modifier = Modifier
-                    .height(700.dp)
-                    .width(350.dp)
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(8.dp))
-//                    .background(Color(0xFFAD8661))
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    itemsIndexed(flashcardUnits) { index, unit ->
-                        Button(
-                            onClick = {
-                                if(viewModel.preSelectionMode) {
-                                    viewModel.preSelectedUnit = true
-                                    viewModel.preSelectedUnitIndex = index
-                                }
-                                onUnitSelected(index)
-                                      },
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                        ) {
-                            Text(text = "Unit ${index + 1}: ${unit.unitName}")
-                        }
-                    }
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onCategorySelected("adverb")
+                    }) {
+                    Text("Adverbs")
                 }
             }
         }

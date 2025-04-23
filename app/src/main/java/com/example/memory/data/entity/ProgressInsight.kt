@@ -15,5 +15,6 @@ data class LanguageProgress(
     val swipesD4: Int = 0,
     val swipesD5: Int = 0,
     val swipesD6: Int = 0,
-    val swipesD7: Int = 0
+    val swipesD7: Int = 0,
+    val lastCheckedEpochDay: Long
 )

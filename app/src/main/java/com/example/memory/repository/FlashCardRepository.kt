@@ -14,8 +14,8 @@ class FlashcardRepository(
 ) {
     private fun getFileNameFromPack(course: String): String {
         return when (course) {
-            "Swedish" -> "flashcardsSw_with_ids_upd.json"
-            "Spanish" -> "flashcardsEs_with_ids_upd.json"
+            "Swedish" -> "flashcardsSw_with_ids_upd_labeled.json"
+            "Spanish" -> "flashcardsEs_with_ids_upd_labeledEs.json"
             "German" -> "flashcardsDe_with_ids.json"
             else -> "flashcards_with_ids.json"
         }

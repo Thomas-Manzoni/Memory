@@ -1,22 +1,31 @@
 package com.example.memory.viewmodel
 
 import android.app.Application
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.memory.data.dao.CategoryDao
+import com.example.memory.data.dao.FlashcardCategoryDao
 import com.example.memory.data.dao.FlashcardInsightDao
+import com.example.memory.data.dao.InsightPosition
 import com.example.memory.data.dao.ProgressInsightDao
 import com.example.memory.data.database.AppDatabase
 import kotlinx.coroutines.launch
 import com.example.memory.data.database.DatabaseProvider
+import com.example.memory.data.entity.FlashcardCategoryCrossRef
 import com.example.memory.data.entity.FlashcardInsight
+import com.example.memory.data.entity.FlashcardWithCategories
 import com.example.memory.data.entity.LanguageProgress
 import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.util.TimeZone
 import kotlin.random.Random
 
 class PlayCardViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,6 +43,10 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private val _currentFlashcard = MutableLiveData<Flashcard?>()
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
     private var currentFlashcardIndex = 0
+
+    // To be able to load cards by category (mostly for exercise section)
+    private val _categoryCards = MutableStateFlow<List<Flashcard>>(emptyList())
+    val categoryCards: StateFlow<List<Flashcard>> = _categoryCards
 
     // For random selection
     private val _currentSectionVal = MutableLiveData(0)
@@ -65,16 +78,258 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private var insightDaoVariable: FlashcardInsightDao? = null
     val insightDao: FlashcardInsightDao
         get() = insightDaoVariable ?: throw IllegalStateException("DAO not initialized. Call switchCourse() first.")
+    private var categoriesRefDaoVariable: FlashcardCategoryDao? = null
+    val categoriesRefDao: FlashcardCategoryDao
+        get() = categoriesRefDaoVariable ?: throw IllegalStateException("DAO not initialized. Call switchCourse() first.")
+    private var categoriesDaoVariable:  CategoryDao? = null
+    val categoriesDao: CategoryDao
+        get() = categoriesDaoVariable ?: throw IllegalStateException("DAO not initialized. Call switchCourse() first.")
 
     private val progressDatabase = DatabaseProvider.getProgressDatabase(getApplication())
     private val progressDao = progressDatabase.progressInsightDao()
     private var currentCourse = ""
 
-
-
-
     private val _newEntriesAlert = MutableLiveData<String?>()
     val newEntriesAlert: LiveData<String?> get() = _newEntriesAlert
+
+    private var _progressedSection: Int = 1
+    val progressedSection: Int
+        get() = _progressedSection
+
+    private var _progressedUnit: Int = 1
+    val progressedUnit: Int
+        get() = _progressedUnit
+
+    init {
+        switchCourse(courseId = "Swedish")
+    }
+
+    fun switchCourse(courseId: String) {
+        loadFlashcardRepo(course = courseId)
+
+        currentCourse = courseId
+        val dbName = "flashcard_${courseId}.db"
+        db = DatabaseProvider.getDatabase(getApplication(), dbName)
+        insightDaoVariable = db?.flashcardInsightDao()
+        categoriesRefDaoVariable = db?.flashcardCategoryDao()
+        categoriesDaoVariable = db?.categoryDao()
+
+        viewModelScope.launch {
+            if(progressDao.hasProgressForLanguage(languageId = courseId)) {
+                Log.d("PlayCardViewModel", "Skipped card populating")
+            } else {
+                populateFlashcardInsightsIfNeeded()
+                populateCrossRefCategoryDatabase()
+            }
+            populateAndLoadProgressDatabase(course = courseId)
+        }
+    }
+
+    fun loadFlashcardRepo(course: String? = null) {
+        val sections = if (course != null)
+            repository.loadFlashcardsFromJson(course)
+        else
+            repository.loadFlashcardsFromJson()
+
+        _flashcardSections.value = sections
+    }
+
+    private suspend fun populateCrossRefCategoryDatabase() {
+        // 1) Load your master category list once
+        val masterCats: Set<String> = categoriesDao.getAllCategories()
+            .map { it.name }
+            .toSet()
+
+        var newLinks = 0
+
+        _flashcardSections.value?.forEach { section ->
+            section.units.forEach { unit ->
+                unit.flashcards.forEach { flashcard ->
+                    val fcId = flashcard.wordId
+                    val semCats  = flashcard.categories ?: emptyList() // → emptyList()
+                    val gramCats = flashcard.grammar    ?: emptyList() // → emptyList()
+                    val desired  = (semCats + gramCats)               // → emptyList()
+                        .filter { it in masterCats }                   // → still emptyList()
+                        .toSet()
+
+                    // 2) Load existing links for this card
+                    val existingLinks: Set<String> = categoriesRefDao.loadWithCategories(fcId).categories.map { it.name }.toSet()
+
+                    // 3) For each desired category that’s in the master list, ensure a link
+                    (desired intersect masterCats).forEach { catName ->
+                        if (catName !in existingLinks) {
+                            categoriesRefDao.insertCrossRef(
+                                FlashcardCategoryCrossRef(
+                                    flashcardId  = fcId,
+                                    categoryName = catName
+                                )
+                            )
+                            newLinks++
+                        }
+                    }
+
+                    // 4) (Optional) Remove links for categories no longer desired
+                    // (existingLinks - desired).forEach { staleCat ->
+                    //   flashcardCategoryDao.removeCrossRef(fcId, staleCat)
+                    // }
+                }
+            }
+        }
+
+        Log.d("CrossRefInit", "Inserted $newLinks new cross‑refs")
+
+    }
+
+    private suspend fun populateFlashcardInsightsIfNeeded() {
+        var newCount = 0
+        var updatedCount = 0
+
+        _flashcardSections.value?.forEachIndexed { sectionIdx, section ->
+            section.units.forEachIndexed { unitIdx, unit ->
+                unit.flashcards.forEach { flashcard ->
+                    val existingInsight = insightDao.getInsight(flashcard.wordId)
+                    if (existingInsight == null) {
+                        insightDao.insertInsight(
+                            FlashcardInsight(
+                                flashcardId = flashcard.wordId,
+                                sectionIndex = sectionIdx,
+                                unitIndex = unitIdx
+                            )
+                        )
+                        newCount++
+                    } else if (
+                        existingInsight.sectionIndex != sectionIdx ||
+                        existingInsight.unitIndex != unitIdx
+                    ) {
+                        val updatedInsight = existingInsight.copy(
+                            sectionIndex = sectionIdx,
+                            unitIndex = unitIdx
+                        )
+                        insightDao.updateInsight(updatedInsight)
+                        updatedCount++
+                    }
+                }
+            }
+        }
+
+        if (newCount > 0 || updatedCount > 0) {
+            _newEntriesAlert.value = buildString {
+                if (newCount > 0) append("$newCount new flashcard insights were inserted. ")
+                if (updatedCount > 0) append("$updatedCount flashcard insights were updated.")
+            }
+        }
+
+        Log.d("PlayCardViewModel", "Finished card populating")
+    }
+
+    private suspend fun populateAndLoadProgressDatabase(course: String) {
+        try {
+            Log.d("PlayCardViewModel", "Start trying to load progress")
+
+            val nowMs = System.currentTimeMillis()
+            val tzOffset = TimeZone.getDefault().rawOffset
+            val todayEpochDay = ((nowMs + tzOffset) / DateUtils.DAY_IN_MILLIS)
+
+            // Try to get the existing progress for this language
+            val existingProgress = progressDao.getProgress(course)
+
+            if (existingProgress == null) {
+                // No progress entry exists for this language, create a new one…
+
+                Log.d("PlayCardViewModel", "No progress record found for $course; creating default entry with lastChecked=$todayEpochDay")
+                val newProgress = LanguageProgress(
+                    languageId = course,
+                    // all your other fields get their defaults,
+                    lastCheckedEpochDay = todayEpochDay
+                )
+                progressDao.insertProgress(newProgress)
+
+                _progressedSection = 0
+                _progressedUnit = 0
+                // Reset any other progress tracking variables to defaults
+            } else {
+                // Progress entry exists, update our UI or ViewModel state with the saved values
+                Log.d("PlayCardViewModel", "Found existing progress for $course: Section ${existingProgress.progressedSection}, Unit ${existingProgress.progressedUnit}")
+                _progressedSection = existingProgress.progressedSection
+                _progressedUnit = existingProgress.progressedUnit
+
+                val deltaDays: Int = (todayEpochDay - existingProgress.lastCheckedEpochDay)
+                    .coerceAtLeast(0L)
+                    .toInt()
+
+                shiftProgressDay(offsetDay = deltaDays, todayEpochDay = todayEpochDay)
+
+            }
+        } catch (e: Exception) {
+            Log.e("PlayCardViewModel", "Error loading progress data for $course", e)
+            // Fallback to default values if database operation fails
+            _progressedSection = 0
+            _progressedUnit = 0
+        }
+    }
+
+    private suspend fun shiftProgressDay(offsetDay: Int, todayEpochDay: Long) {
+        if (offsetDay <= 0) return
+
+        val allProgress = progressDao.getAllProgress()
+        val windowSize = 7
+
+        allProgress.forEach { progress ->
+            val old = listOf(
+                progress.swipesD1,
+                progress.swipesD2,
+                progress.swipesD3,
+                progress.swipesD4,
+                progress.swipesD5,
+                progress.swipesD6,
+                progress.swipesD7,
+            )
+
+            val newWindow: List<Int> = if (offsetDay >= windowSize) {
+                List(windowSize) { 0 }
+            } else {
+                List(windowSize) { idx ->
+                    if (idx < offsetDay) 0
+                    else              old[idx - offsetDay]
+                }
+            }
+
+            val updated = progress.copy(
+                swipesD1 = newWindow[0],
+                swipesD2 = newWindow[1],
+                swipesD3 = newWindow[2],
+                swipesD4 = newWindow[3],
+                swipesD5 = newWindow[4],
+                swipesD6 = newWindow[5],
+                swipesD7 = newWindow[6],
+                lastCheckedEpochDay = todayEpochDay
+            )
+
+            progressDao.updateProgress(updated)
+        }
+    }
+
+
+   suspend fun loadCategoryCardsToDisplay(category: String) {
+        // 1) Load all FlashcardWithCategories for that category
+        val withCats: List<FlashcardWithCategories> = categoriesRefDao.loadByCategory(category)
+
+        // 2) Extract the set of IDs
+        val idsInCat: Set<String> = withCats.map { it.flashcard.flashcardId }.toSet()
+
+        // 3) Walk your in‑memory JSON structure and filter
+        val sections = _flashcardSections.value ?: emptyList()
+        val result: List<Flashcard> = sections
+            .flatMap { sec ->
+                sec.units.flatMap { unit ->
+                    unit.flashcards.filter { it.wordId in idsInCat }
+                }
+            }
+
+        // 4) Publish to UI
+        _categoryCards.value = result
+    }
+
 
     suspend fun fetchDescription(flashcardId: String): String {
         val currentInsight = insightDao.getInsight(flashcardId)
@@ -155,7 +410,8 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             insight.copy(
                 timesCorrect = 0,
                 timesWrong = 0,
-                lastSwipe = 0
+                lastSwipe = 0,
+                lastReviewed = 0
             )
         }
         insightDao.insertInsights(resetInsights)
@@ -170,6 +426,54 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         return totalReviewed
     }
 
+    suspend fun getRecentlySwipedCards(limit: Int = 7): List<String> {
+        // 1) grab the raw insight rows
+        val positions: List<InsightPosition> =
+            insightDao.getRecentInsightPositions(limit)
+
+        // 2) snapshot your in‑memory sections (backed by LiveData)
+        val sections: List<FlashcardSection> =
+            _flashcardSections.value.orEmpty()
+
+        val result = mutableListOf<String>()
+
+        // 3) for each insight, pull out the indices & id, then find the exact card
+        for (pos in positions) {
+            // bounds‑safe get the section
+            val section = sections.getOrNull(pos.sectionIndex) ?: continue
+            // bounds‑safe get the unit
+            val unit = section.units.getOrNull(pos.unitIndex) ?: continue
+
+            // find the one flashcard in that unit whose id matches
+            val cardText = unit.flashcards
+                .firstOrNull { it.wordId == pos.flashcardId }
+                ?.text
+                ?: continue
+
+            result += cardText
+        }
+
+        return result
+    }
+
+
+    suspend fun getWeekSwipes(): List<Int> {
+        val progress = progressDao.getProgress(languageId = currentCourse)
+        return if (progress != null) {
+            listOf(
+                progress.swipesD1,
+                progress.swipesD2,
+                progress.swipesD3,
+                progress.swipesD4,
+                progress.swipesD5,
+                progress.swipesD6,
+                progress.swipesD7
+            )
+        } else {
+            List(7) { 0 }
+        }
+    }
+
     suspend fun fetchReviewStats(flashcardId: String): Pair<Int, Int> {
         val currentInsight = insightDao.getInsight(flashcardId)
         if (currentInsight == null) {
@@ -179,119 +483,18 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             return Pair(currentInsight.timesReviewed, currentInsight.timesCorrect)
         }
     }
-    // -----------------------------------------------------------------------
-    // Loading stored progress -----------------------------------------------
-
-    private var _progressedSection: Int = 1
-    val progressedSection: Int
-        get() = _progressedSection
-
-    private var _progressedUnit: Int = 1
-    val progressedUnit: Int
-        get() = _progressedUnit
-
-    init {
-        switchCourse(courseId = "Swedish")
-    }
 
 
-    fun switchCourse(courseId: String) {
-        loadFlashcardRepo(course = courseId)
-        currentCourse = courseId
-        val dbName = "flashcard_${courseId}.db"
-        db = DatabaseProvider.getDatabase(getApplication(), dbName)
-        insightDaoVariable = db?.flashcardInsightDao()
 
-        viewModelScope.launch {
-            populateFlashcardInsightsIfNeeded()
-            populateAndLoadProgressDatabase(course = courseId)
-        }
-    }
 
-    private suspend fun populateAndLoadProgressDatabase(course: String) {
-        try {
-            // Try to get the existing progress for this language
-            val existingProgress = progressDao.getProgress(course)
 
-            if (existingProgress == null) {
-                // No progress entry exists for this language, create a new one with default values
-                Log.d("PlayCardViewModel", "No progress record found for $course; creating default entry")
-                val newProgress = LanguageProgress(
-                    languageId = course,
-                    // All other fields will use the default values from the entity class
-                )
-                progressDao.insertProgress(newProgress)
 
-                // Now we can update our UI or ViewModel state with the default values
-                _progressedSection = 1
-                _progressedUnit = 1
-                // Reset any other progress tracking variables to defaults
-            } else {
-                // Progress entry exists, update our UI or ViewModel state with the saved values
-                Log.d("PlayCardViewModel", "Found existing progress for $course: Section ${existingProgress.progressedSection}, Unit ${existingProgress.progressedUnit}")
-                _progressedSection = existingProgress.progressedSection
-                _progressedUnit = existingProgress.progressedUnit
-                // Update any other progress tracking variables
-            }
-        } catch (e: Exception) {
-            Log.e("PlayCardViewModel", "Error loading progress data for $course", e)
-            // Fallback to default values if database operation fails
-            _progressedSection = 1
-            _progressedUnit = 1
-        }
-    }
 
-    private suspend fun populateFlashcardInsightsIfNeeded() {
-        var newCount = 0
-        var updatedCount = 0
-
-        _flashcardSections.value?.forEachIndexed { sectionIdx, section ->
-            section.units.forEachIndexed { unitIdx, unit ->
-                unit.flashcards.forEach { flashcard ->
-                    val existingInsight = insightDao.getInsight(flashcard.wordId)
-                    if (existingInsight == null) {
-                        insightDao.insertInsight(
-                            FlashcardInsight(
-                                flashcardId = flashcard.wordId,
-                                sectionIndex = sectionIdx,
-                                unitIndex = unitIdx
-                            )
-                        )
-                        newCount++
-                    } else if (
-                        existingInsight.sectionIndex != sectionIdx ||
-                        existingInsight.unitIndex != unitIdx
-                    ) {
-                        val updatedInsight = existingInsight.copy(
-                            sectionIndex = sectionIdx,
-                            unitIndex = unitIdx
-                        )
-                        insightDao.updateInsight(updatedInsight)
-                        updatedCount++
-                    }
-                }
-            }
-        }
-
-        if (newCount > 0 || updatedCount > 0) {
-            _newEntriesAlert.value = buildString {
-                if (newCount > 0) append("$newCount new flashcard insights were inserted. ")
-                if (updatedCount > 0) append("$updatedCount flashcard insights were updated.")
-            }
-        }
-    }
 
 
     // ---------------------------------------------------------------------------
 
-    fun loadFlashcardRepo(course: String? = null) {
-        val sections = if (course != null)
-            repository.loadFlashcardsFromJson(course)
-        else
-            repository.loadFlashcardsFromJson()
 
-        _flashcardSections.value = sections
-    }
 
     suspend fun loadRandomFlashcard() {
         var selectedUnit: FlashcardUnit? = null
@@ -432,16 +635,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun selectUnit(index: Int) {
-        _flashcardUnits.value?.let { units ->
-            if (index in units.indices) {
-                preSelectedUnit = true
-                preSelectedUnitIndex = index
-                _currentUnit.value = units[index]
-            }
-        }
-    }
-
     private fun showUnits() {
         _currentSection.value?.units?.let { units ->
             if (units.isNotEmpty()) {
@@ -451,13 +644,6 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun resetSectionSelection() {
-        preSelectedSection = false
-    }
-
-    fun resetUnitSelection() {
-        preSelectedUnit = false
-    }
     // -------------------------------------------------------------------------------------
 
     suspend fun updateProgress(newSection: Int, newUnit: Int) {
@@ -485,38 +671,9 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun selectSectionExercise(index: Int) {
-        _flashcardSections.value?.let { units ->
-            if (index in units.indices) {
-                _currentSection.value = units[index]
-                showUnits()
-            }
-        }
-    }
-
     private fun showFlashcard() {
         _currentUnit.value?.flashcards?.let { flashcards ->
             if (flashcards.isNotEmpty()) {
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showNextFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Increment the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.size
-                _currentFlashcard.value = flashcards[currentFlashcardIndex]
-            }
-        }
-    }
-
-    fun showPrevFlashcard() {
-        _currentUnit.value?.flashcards?.let { flashcards ->
-            if (flashcards.isNotEmpty()) {
-                // Decrement the index before setting the flashcard
-                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.size) % flashcards.size
                 _currentFlashcard.value = flashcards[currentFlashcardIndex]
             }
         }
