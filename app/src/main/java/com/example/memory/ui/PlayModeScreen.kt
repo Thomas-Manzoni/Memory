@@ -11,8 +11,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -46,19 +49,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     val currentFlashcard by viewModel.currentFlashcard.observeAsState()
-    val currentSection by viewModel.currentSectionVal.observeAsState()
-    val currentUnit by viewModel.currentUnitVal.observeAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadRandomFlashcard()
     }
 
     val swipeThreshold = 250f // Distance required for a swipe to register
-    var swipeOffset by remember { mutableStateOf(0f) }
+    var swipeOffset by remember { mutableFloatStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) }
 
-    var cardRotation by remember { mutableStateOf(0f) }
+    var cardRotation by remember { mutableFloatStateOf(0f) }
     val cardWidth = 300.dp
     val cardHeight = 500.dp
     val cardCornerRadius = 16.dp
@@ -66,6 +67,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
 
     var cardId by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
+    var isCardFavorite by remember { mutableStateOf(false) }
     // Assume your ViewModel exposes a LiveData (or State) for the description
     cardId = currentFlashcard?.wordId.toString()
 
@@ -91,6 +93,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         if (isFlapOpen && cardId.isNotBlank() && cardId != "null") {
             isFetching = true
             val desc = viewModel.fetchDescription(cardId)
+            isCardFavorite = viewModel.fetchIsFavorite(flashcardId = cardId)
             fetchedDescription = desc
             isFetching = false
         }
@@ -227,6 +230,58 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                             },
                         contentAlignment = Alignment.Center
                     ) {
+
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null  // This removes the ripple/highlight effect
+                                ) {
+                                    coroutineScope.launch {
+                                        isCardFavorite = !isCardFavorite
+                                        // Update the favorite status in the database
+                                        viewModel.updateFavoriteStatus(cardId, isCardFavorite)
+                                        // Optional: Show confirmation
+                                        snackbarHostState.showSnackbar(
+                                            message = if (isCardFavorite) "Added to favorites" else "Removed from favorites",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                        ) {
+                            // Background star (larger, serves as border)
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null, // No description needed for decorative element
+                                tint = Color(0xFFAD2929), // Red border color
+                                modifier = Modifier
+                                    .size(30.dp) // Slightly larger to create border effect
+                                    .align(Alignment.Center)
+                            )
+
+                            // Foreground star
+                            if(isCardFavorite) {
+                                Icon(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = "Favorite",
+                                    tint = Color(0xFFFFD700), // Gold color
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .align(Alignment.Center)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = "Not Favorite",
+                                    tint = Color(0xFFF1EFEF), // White
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .align(Alignment.Center)
+                                )
+                            }
+                        }
 
                         if (!flipped) {
                             Box(

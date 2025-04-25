@@ -36,6 +36,8 @@ fun PopUpExerciseOptions (
     onSectionUnitModeSelected: () -> Unit,
     onCategoryModeSelected: () -> Unit,
     onGrammarCategoryModeSelected: () -> Unit,
+    onFavouritesModeSelected: () -> Unit,
+    onForgottenModeSelected: () -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel,
 ) {
@@ -115,6 +117,40 @@ fun PopUpExerciseOptions (
                         onGrammarCategoryModeSelected()
                     }) {
                     Text("Grammar categories")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onFavouritesModeSelected()
+                    }) {
+                    Text("Favourite cards")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onForgottenModeSelected()
+                    }) {
+                    Text("Forgotten cards")
                 }
             }
         }

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -63,7 +64,7 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
     val recentMissSwiped = remember { mutableStateListOf<String>() }
 
     LaunchedEffect(Unit) {
-        totalSwipes.value = viewModel.getTotalSwipes()
+        totalSwipes.intValue = viewModel.getTotalSwipes()
         val weekSwipes: List<Int> = viewModel.getWeekSwipes()
         swipesPerDay.clear()
         swipesPerDay.addAll(weekSwipes)
@@ -75,7 +76,7 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
         recentMissSwiped.apply {
             clear()
-//            addAll(viewModel.())
+            addAll(viewModel.getRecentlyMissSwipedCards())
         }
     }
 
@@ -163,10 +164,6 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
                         chart.data = BarData(set).apply { barWidth = 0.9f }
 
-                        // optional: relabel x‑axis to ["D7","D6",…,"D1"]
-//                        chart.xAxis.valueFormatter = IndexAxisValueFormatter(
-//                            listOf("D7","D6","D5","D4","D3","D2","D1")
-//                        )
                         chart.xAxis.setLabelCount(7, true)
 
                         chart.invalidate()
@@ -175,7 +172,7 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = "Total cards swiped: ${totalSwipes.value}", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text(text = "Total cards swiped: ${totalSwipes.intValue}", style = MaterialTheme.typography.titleLarge, color = Color.White)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -231,7 +228,7 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
                         modifier = Modifier
                             .weight(1f)                     // take half the available width
                             .fillMaxHeight()                // match the row’s height
-                            .background(Color.Black.copy(alpha = 0.3f))
+                            .background(Color(0xFF447E78).copy(alpha = 0.3f))
                             .padding(8.dp)
                     ) {
                         Column(
@@ -243,7 +240,8 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
                             Text(
                                 text = "Recent cards:",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color.White
+                                color = Color.White,
+                                textDecoration = TextDecoration.Underline
                             )
 
                             Spacer(modifier = Modifier.height(18.dp))
@@ -266,14 +264,34 @@ fun StatisticsMenu(viewModel: PlayCardViewModel, navController: NavController) {
                         modifier = Modifier
                             .weight(1f)                     // take the other half
                             .fillMaxHeight()
-                            .background(Color.Black.copy(alpha = 0.3f))
+                            .background(Color(0xFF447E78).copy(alpha = 0.3f))
                             .padding(8.dp)
                     ) {
-                        Text(
-                            text = "Recent cards2:",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            Text(
+                                text = "Recent unknown cards:",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color.White,
+                                textDecoration = TextDecoration.Underline
+                            )
+
+                            Spacer(modifier = Modifier.height(18.dp))
+
+                            recentMissSwiped.forEach { cardText ->
+                                Text(
+                                    text = cardText,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+                            }
+                        }
                     }
                 }
 

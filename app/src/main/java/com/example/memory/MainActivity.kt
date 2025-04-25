@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     FlashcardListScreen(viewModelPlay)
                 }
 
-                composable("category_flashcard_screen/{category}") { backStackEntry ->
+                composable("category_flashcard_screen") {
                     CategoryListScreen(viewModelPlay)
                 }
             }

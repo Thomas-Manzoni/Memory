@@ -12,10 +12,11 @@ data class FlashcardInsight(
     val timesCorrect: Int = 0,
     val timesWrong: Int = 0,
     val lastReviewed: Long = 0L,
-    val description: String = "Init",
+    val description: String = "",
     val sectionIndex: Int = -1,
     val unitIndex: Int = -1,
-    val lastSwipe: Int = 0
+    val lastSwipe: Int = 0,
+    val isFavorite: Boolean = false
 )
 
 // I have a table that holds only the categories

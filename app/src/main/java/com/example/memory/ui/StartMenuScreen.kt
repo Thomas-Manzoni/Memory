@@ -39,15 +39,19 @@ import com.example.memory.viewmodel.PlayCardViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import com.example.memory.R
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -94,6 +98,11 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             alignment = Alignment.BottomCenter,     // 👈 recenter the image
             modifier = Modifier.matchParentSize()
         )
+
+        val isLoading by viewModel.isLoading.collectAsState()
+        if (isLoading) {
+            LoadingDialog(message = "Fetching course...\nPlease wait")
+        }
 
         Box(
             modifier = Modifier
@@ -152,7 +161,10 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             Spacer(modifier = Modifier.height(680.dp))
 
             Button(
-                onClick = { showPopupMenu = true },
+                onClick = {
+                    resetSelectedModes(viewModel)
+                    showPopupMenu = true
+                          },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(60.dp) // 30dp might be too tight for text
@@ -184,6 +196,7 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 ) {
                     Button(
                         onClick = {
+                            resetSelectedModes(viewModel)
                             showPopupExerciseMenu = true
                             viewModel.preSelectionMode = false
                              },
@@ -230,11 +243,12 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             PopUpPlay(
                 onDismiss = {
                     showPopupMenu = false
-                    viewModel.untilProgressedUnit = false
-                    viewModel.randomWeightedMode = false
-                    viewModel.preSelectionMode = false
+                    resetSelectedModes(viewModel)
                             },
                 onTestUnit = { showPopupSectionMenu = true },
+                onTestCategory = {
+                    showPopupCategories = true
+                },
                 navController = navController,
                 viewModel = viewModel
             )
@@ -245,8 +259,8 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 onDismiss = {
                     showPopupExerciseMenu = false
                     showPopupSectionMenu = false
-                    viewModel.preSelectionMode = false
                     settingProgress = false
+                    resetSelectedModes(viewModel)
                 },
                 onSectionUnitModeSelected = {
                     showPopupExerciseMenu = false
@@ -260,6 +274,22 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                     showPopupExerciseMenu = false
                     showPopupGrammarCategories = true
                 },
+                onFavouritesModeSelected = {
+                    showPopupExerciseMenu = false
+                    coroutineScope.launch {
+                        viewModel.loadCardsToDisplay(PlayCardViewModel.CardDisplayType.FAVORITE)
+                        showPopupCategories = false
+                        navController.navigate("category_flashcard_screen")
+                    }
+                },
+                onForgottenModeSelected = {
+                    showPopupExerciseMenu = false
+                    coroutineScope.launch {
+                        viewModel.loadCardsToDisplay(PlayCardViewModel.CardDisplayType.FORGOTTEN)
+                        showPopupCategories = false
+                        navController.navigate("category_flashcard_screen")
+                    }
+                },
                 navController = navController,
                 viewModel = viewModel,
             )
@@ -271,14 +301,19 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                     showPopupCategories = false
                     showPopupExerciseMenu = false
                     showPopupSectionMenu = false
-                    viewModel.preSelectionMode = false
                     settingProgress = false
+                    resetSelectedModes(viewModel)
                 },
                 onCategorySelected = { categoryName ->
-                    coroutineScope.launch {
-                        viewModel.loadCategoryCardsToDisplay(categoryName)
-                        showPopupCategories = false
-                        navController.navigate("category_flashcard_screen/$categoryName")
+                    viewModel.categorySelected = categoryName
+                    showPopupCategories = false
+                    if(viewModel.categoryMode){
+                        navController.navigate("play_mode")
+                    } else {
+                        coroutineScope.launch {
+                            viewModel.loadCardsToDisplay(PlayCardViewModel.CardDisplayType.CATEGORY)
+                            navController.navigate("category_flashcard_screen")
+                        }
                     }
                 },
                 navController = navController,
@@ -292,14 +327,19 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                     showPopupGrammarCategories = false
                     showPopupExerciseMenu = false
                     showPopupSectionMenu = false
-                    viewModel.preSelectionMode = false
                     settingProgress = false
+                    resetSelectedModes(viewModel)
                 },
                 onCategorySelected = { categoryName ->
-                    coroutineScope.launch {
-                        viewModel.loadCategoryCardsToDisplay(categoryName)
-                        showPopupCategories = false
-                        navController.navigate("category_flashcard_screen/$categoryName")
+                    viewModel.categorySelected = categoryName
+                    if(viewModel.categoryMode){
+                        navController.navigate("play_mode")
+                    } else {
+                        coroutineScope.launch {
+                            viewModel.loadCardsToDisplay(PlayCardViewModel.CardDisplayType.CATEGORY)
+                            showPopupCategories = false
+                            navController.navigate("category_flashcard_screen")
+                        }
                     }
                 },
                 navController = navController,
@@ -312,8 +352,8 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 onDismiss = {
                     showPopupExerciseMenu = false
                     showPopupSectionMenu = false
-                    viewModel.preSelectionMode = false
                     settingProgress = false
+                    resetSelectedModes(viewModel)
                             },
                 onSectionSelected = { index ->
                     selectedSectionIndex = index
@@ -330,8 +370,8 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
             PopUpUnit(
                 onDismiss = {
                     showPopupUnitMenu = false
-                    viewModel.preSelectionMode = false
                     settingProgress = false
+                    resetSelectedModes(viewModel)
                             },
                 onUnitSelected = { index ->
                     showPopupUnitMenu = false
@@ -360,6 +400,48 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 navController = navController,
                 viewModel = viewModel
             )
+        }
+    }
+}
+
+private fun resetSelectedModes(viewModel: PlayCardViewModel){
+    viewModel.preSelectionMode = false
+    viewModel.categoryMode = false
+    viewModel.randomWeightedMode = false
+    viewModel.untilProgressedUnit = false
+}
+
+@Composable
+fun LoadingDialog(message: String) {
+    Dialog(
+        onDismissRequest = { /* Cannot be dismissed */ },
+        DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(200.dp)
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(16.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = Color(0xFF447E78),
+                    modifier = Modifier.size(50.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

@@ -29,6 +29,7 @@ import com.example.memory.viewmodel.PlayCardViewModel
 fun PopUpPlay (
     onDismiss: () -> Unit,
     onTestUnit: () -> Unit,
+    onTestCategory: () -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel
 ) {
@@ -114,6 +115,25 @@ fun PopUpPlay (
                         onTestUnit()
                     }) {
                     Text("Test unit")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onDismiss()
+                        viewModel.categoryMode = true
+                        onTestCategory()
+                    }) {
+                    Text("Study a category")
                 }
             }
         }

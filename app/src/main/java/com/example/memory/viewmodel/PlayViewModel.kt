@@ -3,6 +3,7 @@ package com.example.memory.viewmodel
 import android.app.Application
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -45,8 +46,13 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private var currentFlashcardIndex = 0
 
     // To be able to load cards by category (mostly for exercise section)
-    private val _categoryCards = MutableStateFlow<List<Flashcard>>(emptyList())
-    val categoryCards: StateFlow<List<Flashcard>> = _categoryCards
+    private val _displayCards = MutableStateFlow<List<Flashcard>>(emptyList())
+    val displayCards: StateFlow<List<Flashcard>> = _displayCards
+    enum class CardDisplayType {
+        CATEGORY,
+        FAVORITE,
+        FORGOTTEN
+    }
 
     // For random selection
     private val _currentSectionVal = MutableLiveData(0)
@@ -62,6 +68,10 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     var preSelectedUnitIndex = 0
     var preSelectedCard = false // for random weighted
     var preSelectedCardIndex = 0
+
+    // CategoryMode
+    var categoryMode = false
+    var categorySelected = ""
 
     // From progress
     var untilProgressedUnit = false
@@ -91,6 +101,8 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     private val _newEntriesAlert = MutableLiveData<String?>()
     val newEntriesAlert: LiveData<String?> get() = _newEntriesAlert
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private var _progressedSection: Int = 1
     val progressedSection: Int
@@ -115,12 +127,21 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         categoriesDaoVariable = db?.categoryDao()
 
         viewModelScope.launch {
+            _isLoading.value = true
             if(progressDao.hasProgressForLanguage(languageId = courseId)) {
                 Log.d("PlayCardViewModel", "Skipped card populating")
+//                populateFlashcardInsightsIfNeeded()
+                populateCrossRefCategoryDatabase()
             } else {
+
                 populateFlashcardInsightsIfNeeded()
                 populateCrossRefCategoryDatabase()
             }
+            _isLoading.value = false
+            val deletedCount = categoriesRefDao.deleteDuplicateCrossRefs()
+            Log.d("Database", "Deleted $deletedCount duplicate category cross-references")
+            val deletedCount2 = insightDao.deleteDuplicateInsights()
+            Log.d("Database", "Deleted $deletedCount2 duplicate flashcard insights")
             populateAndLoadProgressDatabase(course = courseId)
         }
     }
@@ -310,24 +331,36 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     }
 
 
-   suspend fun loadCategoryCardsToDisplay(category: String) {
-        // 1) Load all FlashcardWithCategories for that category
-        val withCats: List<FlashcardWithCategories> = categoriesRefDao.loadByCategory(category)
+    suspend fun loadCardsToDisplay(cardType: CardDisplayType) {
+        // 1) Load appropriate flashcard IDs based on type
+        val cardIds: Set<String> = when (cardType) {
+            CardDisplayType.CATEGORY ->
+                categoriesRefDao.loadByCategory(categorySelected)
+                    .map { it.flashcard.flashcardId }
+                    .toSet()
 
-        // 2) Extract the set of IDs
-        val idsInCat: Set<String> = withCats.map { it.flashcard.flashcardId }.toSet()
+            CardDisplayType.FAVORITE ->
+                insightDao.loadFavoriteCards()
+                    .map { it.flashcardId }
+                    .toSet()
 
-        // 3) Walk your in‑memory JSON structure and filter
+            CardDisplayType.FORGOTTEN ->
+                insightDao.loadForgottenCards()
+                    .map { it.flashcardId }
+                    .toSet()
+        }
+
+        // 2) Filter in-memory flashcards using the IDs
         val sections = _flashcardSections.value ?: emptyList()
         val result: List<Flashcard> = sections
             .flatMap { sec ->
                 sec.units.flatMap { unit ->
-                    unit.flashcards.filter { it.wordId in idsInCat }
+                    unit.flashcards.filter { it.wordId in cardIds }
                 }
             }
 
-        // 4) Publish to UI
-        _categoryCards.value = result
+        // 3) Publish to UI
+        _displayCards.value = result
     }
 
 
@@ -339,6 +372,28 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         } else {
             return currentInsight.description
        }
+    }
+
+    suspend fun fetchIsFavorite(flashcardId: String): Boolean {
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+            return false
+        } else {
+            return currentInsight.isFavorite
+        }
+    }
+
+    suspend fun updateFavoriteStatus(flashcardId: String, isFavoriteInput: Boolean) {
+        val currentInsight = insightDao.getInsight(flashcardId)
+        if (currentInsight == null) {
+            Log.d("PlayCardViewModel", "No FlashcardInsight found for $flashcardId; inserting default record")
+        } else {
+            val updatedInsight = currentInsight.copy(
+                isFavorite = isFavoriteInput
+            )
+            insightDao.updateInsight(updatedInsight)  // Use update instead of insert
+        }
     }
 
     fun clearNewEntriesAlert() {
@@ -353,7 +408,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 lastReviewed = System.currentTimeMillis(),
                 description = newDescription
             )
-            insightDao.insertInsight(updatedInsight)
+            insightDao.updateInsight(updatedInsight)
         }
     }
 
@@ -368,7 +423,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 lastReviewed = System.currentTimeMillis(),
                 lastSwipe = -1
             )
-            insightDao.insertInsight(updatedInsight)
+            insightDao.updateInsight(updatedInsight)
         }
 
         if (currentProgress != null) {
@@ -391,7 +446,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 lastReviewed = System.currentTimeMillis(),
                 lastSwipe = 1
             )
-            insightDao.insertInsight(updatedInsight)
+            insightDao.updateInsight(updatedInsight)
         }
 
         if (currentProgress != null) {
@@ -430,6 +485,36 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         // 1) grab the raw insight rows
         val positions: List<InsightPosition> =
             insightDao.getRecentInsightPositions(limit)
+
+        // 2) snapshot your in‑memory sections (backed by LiveData)
+        val sections: List<FlashcardSection> =
+            _flashcardSections.value.orEmpty()
+
+        val result = mutableListOf<String>()
+
+        // 3) for each insight, pull out the indices & id, then find the exact card
+        for (pos in positions) {
+            // bounds‑safe get the section
+            val section = sections.getOrNull(pos.sectionIndex) ?: continue
+            // bounds‑safe get the unit
+            val unit = section.units.getOrNull(pos.unitIndex) ?: continue
+
+            // find the one flashcard in that unit whose id matches
+            val cardText = unit.flashcards
+                .firstOrNull { it.wordId == pos.flashcardId }
+                ?.text
+                ?: continue
+
+            result += cardText
+        }
+
+        return result
+    }
+
+    suspend fun getRecentlyMissSwipedCards(limit: Int = 7): List<String> {
+        // 1) grab the raw insight rows
+        val positions: List<InsightPosition> =
+            insightDao.getRecentMissSwipeInsightPositions(limit)
 
         // 2) snapshot your in‑memory sections (backed by LiveData)
         val sections: List<FlashcardSection> =
@@ -502,7 +587,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
         if (numberOfSections == 0) return
 
-        if (randomWeightedMode){
+        if (randomWeightedMode || untilProgressedUnit || categoryMode){
             val time1 = System.currentTimeMillis()
             val triple = selectWeightedRandomCard() ?: return
             val time2 = System.currentTimeMillis()
@@ -597,14 +682,20 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
     // Weighted-random-selection ---------------------------------------------------------
 
-    suspend fun selectWeightedRandomCard(): Triple<Int, Int, Int>? {
-        val picks = insightDao.debugWeightedPicks()
-        picks.forEach {
-            Log.d("WeightedDebug", "ID: ${it.flashcardId}, rand: ${it.score - it.mistakeWeight}, mistakes: ${it.mistakeWeight}, score: ${it.score}")
+    private suspend fun selectWeightedRandomCard(): Triple<Int, Int, Int>? {
+        val flashcardPicks = if (untilProgressedUnit) {
+            insightDao.debugWeightedPicksUntilProgress(maxSection = progressedSection, maxUnit = progressedUnit)
+        } else if (randomWeightedMode){
+            insightDao.debugWeightedPicks()
+        } else {
+            categoriesRefDao.debugWeightedPicksCategory(category = categorySelected)
+        }
+        flashcardPicks.forEach { pick ->
+            Log.d("WeightedDebug", "ID: ${pick.flashcardId}, rand: ${pick.score - pick.mistakeWeight}, mistakes: ${pick.mistakeWeight}, score: ${pick.score}")
         }
 
         //val randomFlashcardId = insightDao.getWeightedRandomCardId()
-        val randomFlashcardId = picks.firstOrNull()?.flashcardId ?: return null
+        val randomFlashcardId = flashcardPicks.firstOrNull()?.flashcardId ?: return null
 
         val insight = insightDao.getInsight(randomFlashcardId) ?: return null
 

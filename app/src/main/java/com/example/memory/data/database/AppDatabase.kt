@@ -14,7 +14,7 @@ import com.example.memory.data.entity.FlashcardCategoryCrossRef
 import com.example.memory.data.entity.LanguageProgress
 
 @Database(entities = [FlashcardInsight::class, Category::class, FlashcardCategoryCrossRef::class],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -81,6 +81,12 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         ('adjective'),
         ('adverb')
     """.trimIndent())
+    }
+}
+
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE flashcard_insights ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
     }
 }
 

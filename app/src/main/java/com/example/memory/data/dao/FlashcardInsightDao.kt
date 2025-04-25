@@ -41,6 +41,23 @@ interface FlashcardInsightDao {
     """)
     suspend fun debugWeightedPicks(): List<DebugPick>
 
+    @Query("""
+    SELECT flashcardId,
+           mistakeWeight,
+           (randPart + mistakeWeight) AS score
+    FROM (
+        SELECT flashcardId,
+               (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
+               (1 + lastSwipe) * 10 AS mistakeWeight
+        FROM flashcard_insights
+        WHERE sectionIndex < :maxSection OR
+            (sectionIndex = :maxSection AND unitIndex <= :maxUnit)    
+    )
+    ORDER BY score DESC
+    LIMIT 10
+    """)
+    suspend fun debugWeightedPicksUntilProgress(maxSection: Int, maxUnit: Int): List<DebugPick>
+
     @Query("SELECT SUM(timesReviewed) FROM flashcard_insights")
     suspend fun getTotalTimesReviewed(): Int?
 
@@ -55,11 +72,35 @@ interface FlashcardInsightDao {
     @Query("""
     SELECT flashcardId, sectionIndex, unitIndex
       FROM flashcard_insights
-      WHERE lastSwipe = -1
+      WHERE lastSwipe = 1
     ORDER BY lastReviewed DESC
     LIMIT :limit
   """)
-    suspend fun getRecentMissedInsightPositions(limit: Int = 7): List<InsightPosition>
+    suspend fun getRecentMissSwipeInsightPositions(limit: Int = 7): List<InsightPosition>
+
+    @Query("""
+    SELECT *
+      FROM flashcard_insights
+     WHERE isFavorite = 1
+  """)
+    suspend fun loadFavoriteCards(): List<FlashcardInsight>
+
+    @Query("""
+    SELECT *
+      FROM flashcard_insights
+     WHERE lastSwipe = 1
+  """)
+    suspend fun loadForgottenCards(): List<FlashcardInsight>
+
+    @Query("""
+    DELETE FROM flashcard_insights
+    WHERE rowid NOT IN (
+        SELECT MIN(rowid)
+        FROM flashcard_insights
+        GROUP BY flashcardId
+    )
+    """)
+    suspend fun deleteDuplicateInsights(): Int
 }
 
 data class DebugPick(
@@ -100,6 +141,16 @@ interface FlashcardCategoryDao {
     @Query("SELECT * FROM flashcard_insights")
     suspend fun loadAllWithCategories(): List<FlashcardWithCategories>
 
+    @Query("""
+    DELETE FROM flashcard_category_xref
+    WHERE rowid NOT IN (
+        SELECT MIN(rowid)
+        FROM flashcard_category_xref
+        GROUP BY flashcardId, categoryName
+    )
+    """)
+    suspend fun deleteDuplicateCrossRefs(): Int
+
     // 5) Load only those in a given category
     @Transaction
     @Query("""
@@ -110,4 +161,21 @@ interface FlashcardCategoryDao {
      WHERE x.categoryName = :catName
   """)
     suspend fun loadByCategory(catName: String): List<FlashcardWithCategories>
+
+    @Query("""
+    SELECT flashcardId,
+           mistakeWeight,
+           (randPart + mistakeWeight) AS score
+    FROM (
+        SELECT f.flashcardId,
+               (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
+               (1 + f.lastSwipe) * 10 AS mistakeWeight
+        FROM flashcard_insights f
+        JOIN flashcard_category_xref x ON f.flashcardId = x.flashcardId
+        WHERE x.categoryName = :category
+    )
+    ORDER BY score DESC
+    LIMIT 10
+    """)
+    suspend fun debugWeightedPicksCategory(category: String): List<DebugPick>
 }
