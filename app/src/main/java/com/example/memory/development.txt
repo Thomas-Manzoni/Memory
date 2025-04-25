@@ -4,7 +4,6 @@
 - Add audio function
 
 - Make the category flashcard screen the standard way of displaying exercise cards (architecture)
-- Add fetching course when downloading
 
 - Add manual categories
 - Add "Add card"

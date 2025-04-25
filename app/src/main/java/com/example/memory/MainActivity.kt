@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.memory.ui.CategoryListScreen
 import com.example.memory.ui.FlashcardListScreen
+import com.example.memory.ui.ListenScreen
 import com.example.memory.ui.PlayScreen
 import com.example.memory.ui.StartMenu
 import com.example.memory.ui.StatisticsMenu
@@ -36,6 +37,10 @@ class MainActivity : ComponentActivity() {
 
                 composable("statistics_menu") {
                     StatisticsMenu(viewModelPlay, navController)
+                }
+
+                composable("listen_screen") {
+                    ListenScreen(viewModelPlay)
                 }
 
                 composable("flashcard_screen/{unit}") { backStackEntry ->

@@ -249,6 +249,12 @@ fun StartMenu(viewModel: PlayCardViewModel, navController: NavController) {
                 onTestCategory = {
                     showPopupCategories = true
                 },
+                onListen = {
+                    coroutineScope.launch {
+                        viewModel.loadRandomFlashcard()
+                        navController.navigate("listen_screen")
+                    }
+                },
                 navController = navController,
                 viewModel = viewModel
             )

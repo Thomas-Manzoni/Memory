@@ -30,6 +30,7 @@ fun PopUpPlay (
     onDismiss: () -> Unit,
     onTestUnit: () -> Unit,
     onTestCategory: () -> Unit,
+    onListen: () -> Unit,
     navController: NavController,
     viewModel: PlayCardViewModel
 ) {
@@ -134,6 +135,25 @@ fun PopUpPlay (
                         onTestCategory()
                     }) {
                     Text("Study a category")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF447E78),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        onDismiss()
+                        viewModel.randomWeightedMode = true
+                        onListen()
+                    }) {
+                    Text("Listen")
                 }
             }
         }

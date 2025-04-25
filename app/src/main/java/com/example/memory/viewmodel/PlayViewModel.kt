@@ -26,6 +26,7 @@ import com.example.memory.model.FlashcardSection
 import com.example.memory.repository.FlashcardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.Locale
 import java.util.TimeZone
 import kotlin.random.Random
 
@@ -44,6 +45,10 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     private val _currentFlashcard = MutableLiveData<Flashcard?>()
     val currentFlashcard: LiveData<Flashcard?> get() = _currentFlashcard
     private var currentFlashcardIndex = 0
+
+    // Reading TTS
+    private val _sourceLang = MutableStateFlow("sv-SE")
+    val sourceLang: StateFlow<String> = _sourceLang
 
     // To be able to load cards by category (mostly for exercise section)
     private val _displayCards = MutableStateFlow<List<Flashcard>>(emptyList())
@@ -126,12 +131,14 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         categoriesRefDaoVariable = db?.flashcardCategoryDao()
         categoriesDaoVariable = db?.categoryDao()
 
+        setSourceLang(courseId)
+
         viewModelScope.launch {
             _isLoading.value = true
             if(progressDao.hasProgressForLanguage(languageId = courseId)) {
                 Log.d("PlayCardViewModel", "Skipped card populating")
 //                populateFlashcardInsightsIfNeeded()
-                populateCrossRefCategoryDatabase()
+//                populateCrossRefCategoryDatabase()
             } else {
 
                 populateFlashcardInsightsIfNeeded()
@@ -363,6 +370,20 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         _displayCards.value = result
     }
 
+    private fun languageNameToTag(name: String): String =
+        when (name) {
+            "Swedish"  -> "sv-SE"
+            "Spanish"  -> "es-ES"
+            "French"   -> "fr-FR"
+            "English"  -> "en-US"
+            // …add your other courses here
+            else       -> Locale.getDefault().toLanguageTag()
+        }
+
+    /** Exposed so you can update the source-text language from anywhere */
+    fun setSourceLang(languageName: String) {
+        _sourceLang.value = languageNameToTag(languageName)
+    }
 
     suspend fun fetchDescription(flashcardId: String): String {
         val currentInsight = insightDao.getInsight(flashcardId)
