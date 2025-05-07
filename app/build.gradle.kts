@@ -81,6 +81,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.mpandroidchart)
+
+    implementation(libs.androidx.ui.material)
+    implementation(libs.material.icons.extended)
 }
 
 configurations.all {

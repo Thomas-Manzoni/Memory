@@ -2,6 +2,7 @@ package com.example.memory.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.memory.data.dao.CategoryDao
@@ -12,11 +13,16 @@ import com.example.memory.data.dao.ProgressInsightDao
 import com.example.memory.data.entity.Category
 import com.example.memory.data.entity.FlashcardCategoryCrossRef
 import com.example.memory.data.entity.LanguageProgress
+import com.example.memory.data.entity.LearnStatusConverter
 
-@Database(entities = [FlashcardInsight::class, Category::class, FlashcardCategoryCrossRef::class],
-    version = 8,
+@Database(entities =
+    [FlashcardInsight::class,
+    Category::class,
+    FlashcardCategoryCrossRef::class],
+    version = 9,
     exportSchema = false
 )
+@TypeConverters(LearnStatusConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun flashcardInsightDao(): FlashcardInsightDao
     abstract fun categoryDao(): CategoryDao
@@ -87,6 +93,39 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
 val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE flashcard_insights ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Create new table with updated schema (replacing lastSwipe with learnStatus)
+        db.execSQL("""
+            CREATE TABLE flashcard_insights_new (
+                flashcardId TEXT NOT NULL PRIMARY KEY,
+                timesReviewed INTEGER NOT NULL,
+                timesCorrect INTEGER NOT NULL,
+                timesWrong INTEGER NOT NULL,
+                lastReviewed INTEGER NOT NULL,
+                description TEXT NOT NULL,
+                sectionIndex INTEGER NOT NULL,
+                unitIndex INTEGER NOT NULL,
+                learnStatus INTEGER NOT NULL,
+                isFavorite INTEGER NOT NULL
+            )
+        """)
+
+        // Copy data from old table to new table, mapping lastSwipe to learnStatus
+        db.execSQL("""
+            INSERT INTO flashcard_insights_new
+            SELECT flashcardId, timesReviewed, timesCorrect, timesWrong, lastReviewed,
+                   description, sectionIndex, unitIndex, 
+                   0, isFavorite
+            FROM flashcard_insights
+        """)
+
+        // Drop old table and rename new one
+        db.execSQL("DROP TABLE flashcard_insights")
+        db.execSQL("ALTER TABLE flashcard_insights_new RENAME TO flashcard_insights")
     }
 }
 

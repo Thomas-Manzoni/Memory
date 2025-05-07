@@ -20,6 +20,7 @@ import com.example.memory.data.entity.FlashcardCategoryCrossRef
 import com.example.memory.data.entity.FlashcardInsight
 import com.example.memory.data.entity.FlashcardWithCategories
 import com.example.memory.data.entity.LanguageProgress
+import com.example.memory.data.entity.LearnStatus
 import com.example.memory.model.Flashcard
 import com.example.memory.model.FlashcardUnit
 import com.example.memory.model.FlashcardSection
@@ -49,6 +50,8 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     // Reading TTS
     private val _sourceLang = MutableStateFlow("sv-SE")
     val sourceLang: StateFlow<String> = _sourceLang
+    private val _sourceVoice = MutableStateFlow("sv-SE")
+    val sourceVoice: StateFlow<String> = _sourceVoice
 
     // To be able to load cards by category (mostly for exercise section)
     private val _displayCards = MutableStateFlow<List<Flashcard>>(emptyList())
@@ -380,9 +383,20 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             else       -> Locale.getDefault().toLanguageTag()
         }
 
+    private fun languageNameToVoice(name: String): String =
+        when (name) {
+            "Swedish"  -> "sv-se-x-cmh-network"
+            "Spanish"  -> "es-es-x-eed-network"
+            "French"   -> "fr-fr-x-frd-network"
+            "English"  -> "en-US"
+            // …add your other courses here
+            else       -> Locale.getDefault().toLanguageTag()
+        }
+
     /** Exposed so you can update the source-text language from anywhere */
     fun setSourceLang(languageName: String) {
         _sourceLang.value = languageNameToTag(languageName)
+        _sourceVoice.value = languageNameToVoice(languageName)
     }
 
     suspend fun fetchDescription(flashcardId: String): String {
@@ -442,8 +456,14 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 timesReviewed = currentInsight.timesReviewed + 1,
                 timesCorrect = currentInsight.timesCorrect + 1,
                 lastReviewed = System.currentTimeMillis(),
-                lastSwipe = -1
-            )
+                learnStatus = when (currentInsight.learnStatus) {
+                    LearnStatus.UNKNOWN -> LearnStatus.LEARNING
+                    LearnStatus.FORGOTTEN -> LearnStatus.LEARNING
+                    LearnStatus.LEARNING -> LearnStatus.KNOWN
+                    LearnStatus.KNOWN -> LearnStatus.KNOWN
+                    else -> LearnStatus.LEARNING
+                }
+                )
             insightDao.updateInsight(updatedInsight)
         }
 
@@ -465,7 +485,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
                 timesReviewed = currentInsight.timesReviewed + 1,
                 timesWrong = currentInsight.timesWrong + 1,
                 lastReviewed = System.currentTimeMillis(),
-                lastSwipe = 1
+                learnStatus = LearnStatus.FORGOTTEN
             )
             insightDao.updateInsight(updatedInsight)
         }
@@ -486,7 +506,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             insight.copy(
                 timesCorrect = 0,
                 timesWrong = 0,
-                lastSwipe = 0,
+                learnStatus = LearnStatus.UNKNOWN,
                 lastReviewed = 0
             )
         }
@@ -608,65 +628,26 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
 
         if (numberOfSections == 0) return
 
-        if (randomWeightedMode || untilProgressedUnit || categoryMode){
-            val time1 = System.currentTimeMillis()
-            val triple = selectWeightedRandomCard() ?: return
-            val time2 = System.currentTimeMillis()
-            Log.d("Perf", "load random card took ${time2 - time1} ms")
-            val (sectionIndex, unitIndex, cardIndex) = triple
+//            val time1 = System.currentTimeMillis()
+        val triple = selectWeightedRandomCard() ?: return
+//            val time2 = System.currentTimeMillis()
+//            Log.d("Perf", "load random card took ${time2 - time1} ms")
+        val (sectionIndex, unitIndex, cardIndex) = triple
 
-            // Just like in your full random logic
-            preSelectedSectionIndex = sectionIndex
-            preSelectedUnitIndex = unitIndex
-            preSelectedCardIndex = cardIndex
+        // Just like in your full random logic
+        preSelectedSectionIndex = sectionIndex
+        preSelectedUnitIndex = unitIndex
+        preSelectedCardIndex = cardIndex
 
-            _currentSectionVal.value = sectionIndex
-            _currentUnitVal.value = unitIndex
+        _currentSectionVal.value = sectionIndex
+        _currentUnitVal.value = unitIndex
 
-            val selectedSemiRandomSection = _flashcardSections.value?.get(sectionIndex) ?: return
-            val selectedSemiRandomUnit = selectedSemiRandomSection.units.getOrNull(unitIndex) ?: return
-            val selectedSemiRandomFlashcard = selectedSemiRandomUnit.flashcards.getOrNull(cardIndex) ?: return
+        val selectedSemiRandomSection = _flashcardSections.value?.get(sectionIndex) ?: return
+        val selectedSemiRandomUnit = selectedSemiRandomSection.units.getOrNull(unitIndex) ?: return
+        val selectedSemiRandomFlashcard = selectedSemiRandomUnit.flashcards.getOrNull(cardIndex) ?: return
 
-            _currentFlashcard.value = selectedSemiRandomFlashcard
-            return
-        }
-
-        if (untilProgressedUnit){
-            if(!totUnitsLoaded){
-                loadTotUnitProgressed()
-                totUnitsLoaded = true
-            }
-            selectRandomUnitFromProgress()?.let { (section, unit) ->
-                _currentSectionVal.value = section
-                _currentUnitVal.value = unit
-                val selectedSection = _flashcardSections.value?.get(section) ?: return
-                selectedUnit = selectedSection.units[unit]
-            }
-        } else {
-            var randomSectionIndex = numberOfSections?.let { Random.nextInt(0, it) }
-            if (preSelectedSection) {
-                randomSectionIndex = preSelectedSectionIndex
-            }
-            _currentSectionVal.value = randomSectionIndex
-            val selectedSection = randomSectionIndex?.let { _flashcardSections.value?.get(it) } ?: return
-
-            val unitCount = selectedSection.units.size
-            if (unitCount == 0) return
-
-            var randomUnitIndex = Random.nextInt(0, unitCount)
-            if (preSelectedUnit) {
-                randomUnitIndex = preSelectedUnitIndex
-            }
-            _currentUnitVal.value = randomUnitIndex
-            selectedUnit = selectedSection.units[randomUnitIndex]
-        }
-
-        val flashcardCount = selectedUnit?.flashcards?.size
-        if (flashcardCount == 0) return
-
-        val randomFlashcardIndex = flashcardCount?.let { Random.nextInt(0, it) }
-        val selectedFlashcard = randomFlashcardIndex?.let { selectedUnit?.flashcards?.get(it) }
-        _currentFlashcard.value = selectedFlashcard
+        _currentFlashcard.value = selectedSemiRandomFlashcard
+        return
     }
 
     private fun loadTotUnitProgressed() {
@@ -708,6 +689,8 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
             insightDao.debugWeightedPicksUntilProgress(maxSection = progressedSection, maxUnit = progressedUnit)
         } else if (randomWeightedMode){
             insightDao.debugWeightedPicks()
+        } else if (preSelectionMode){
+            insightDao.debugWeightedPicksFromUnit(slctSection = preSelectedSectionIndex, slctUnit = preSelectedUnitIndex)
         } else {
             categoriesRefDao.debugWeightedPicksCategory(category = categorySelected)
         }

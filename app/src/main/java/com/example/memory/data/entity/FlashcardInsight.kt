@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 
 @Entity(tableName = "flashcard_insights")
 data class FlashcardInsight(
@@ -15,9 +16,28 @@ data class FlashcardInsight(
     val description: String = "",
     val sectionIndex: Int = -1,
     val unitIndex: Int = -1,
-    val lastSwipe: Int = 0,
+    val learnStatus: LearnStatus = LearnStatus.UNKNOWN,
     val isFavorite: Boolean = false
 )
+
+enum class LearnStatus {
+    UNKNOWN,    // 0
+    FORGOTTEN,  // 1
+    LEARNING,   // 2
+    KNOWN       // 3
+}
+
+class LearnStatusConverter {
+    @TypeConverter
+    fun fromLearnStatus(learnStatus: LearnStatus): Int {
+        return learnStatus.ordinal
+    }
+
+    @TypeConverter
+    fun toLearnStatus(value: Int): LearnStatus {
+        return LearnStatus.entries[value]
+    }
+}
 
 // I have a table that holds only the categories
 @Entity(tableName = "categories")

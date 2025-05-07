@@ -33,7 +33,7 @@ interface FlashcardInsightDao {
     FROM (
         SELECT flashcardId,
                (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
-               (1 + lastSwipe) * 10 AS mistakeWeight
+               0 AS mistakeWeight
         FROM flashcard_insights
     )
     ORDER BY score DESC
@@ -48,7 +48,7 @@ interface FlashcardInsightDao {
     FROM (
         SELECT flashcardId,
                (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
-               (1 + lastSwipe) * 10 AS mistakeWeight
+               0 * 10 AS mistakeWeight
         FROM flashcard_insights
         WHERE sectionIndex < :maxSection OR
             (sectionIndex = :maxSection AND unitIndex <= :maxUnit)    
@@ -57,6 +57,22 @@ interface FlashcardInsightDao {
     LIMIT 10
     """)
     suspend fun debugWeightedPicksUntilProgress(maxSection: Int, maxUnit: Int): List<DebugPick>
+
+    @Query("""
+    SELECT flashcardId,
+           mistakeWeight,
+           (randPart + mistakeWeight) AS score
+    FROM (
+        SELECT flashcardId,
+               (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
+               0 * 10 AS mistakeWeight
+        FROM flashcard_insights
+        WHERE (sectionIndex = :slctSection AND unitIndex = :slctUnit)    
+    )
+    ORDER BY score DESC
+    LIMIT 10
+    """)
+    suspend fun debugWeightedPicksFromUnit(slctSection: Int, slctUnit: Int): List<DebugPick>
 
     @Query("SELECT SUM(timesReviewed) FROM flashcard_insights")
     suspend fun getTotalTimesReviewed(): Int?
@@ -72,7 +88,7 @@ interface FlashcardInsightDao {
     @Query("""
     SELECT flashcardId, sectionIndex, unitIndex
       FROM flashcard_insights
-      WHERE lastSwipe = 1
+      WHERE learnStatus = 1 -- FORGOTTEN
     ORDER BY lastReviewed DESC
     LIMIT :limit
   """)
@@ -88,7 +104,7 @@ interface FlashcardInsightDao {
     @Query("""
     SELECT *
       FROM flashcard_insights
-     WHERE lastSwipe = 1
+     WHERE learnStatus = 1 -- FORGOTTEN
   """)
     suspend fun loadForgottenCards(): List<FlashcardInsight>
 
@@ -169,7 +185,7 @@ interface FlashcardCategoryDao {
     FROM (
         SELECT f.flashcardId,
                (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
-               (1 + f.lastSwipe) * 10 AS mistakeWeight
+               0 AS mistakeWeight
         FROM flashcard_insights f
         JOIN flashcard_category_xref x ON f.flashcardId = x.flashcardId
         WHERE x.categoryName = :category

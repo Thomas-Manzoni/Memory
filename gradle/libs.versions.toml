@@ -43,6 +43,8 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 androidx-datastore-preferences-core-android = { group = "androidx.datastore", name = "datastore-preferences-core-android", version.ref = "datastorePreferencesCoreAndroid" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-ui" }
+androidx-ui-material = { group = "androidx.compose.material", name = "material" }
+material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

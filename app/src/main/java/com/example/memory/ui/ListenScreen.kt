@@ -1,5 +1,7 @@
 package com.example.memory.ui
 
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +25,7 @@ import com.example.memory.ui.components.readCard
 import com.example.memory.ui.components.rememberTts
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.Pause
 
 
 @Composable
@@ -32,6 +35,7 @@ fun ListenScreen(viewModel: PlayCardViewModel = viewModel()) {
 
     // dynamically chosen source‐text language
     val sourceLang by viewModel.sourceLang.collectAsState()
+    val sourceVoice by viewModel.sourceVoice.collectAsState()
     val currentFlashcard by viewModel.currentFlashcard.observeAsState()
 
     var isActive by remember { mutableStateOf(false) }
@@ -89,55 +93,58 @@ fun ListenScreen(viewModel: PlayCardViewModel = viewModel()) {
             }
         }
 
-        // Play button
-        IconButton(
-            onClick = {
-                isActive = true
-                currentFlashcard?.let { _ ->
-                    scope.launch {
-                        while (isActive) {
-                            viewModel.loadRandomFlashcard()
-                            // Wait for the current flashcard to update
-                            delay(300)
-                            // Get the latest flashcard
-                            viewModel.currentFlashcard.value?.let { currentCard ->
-                                tts.readCard(currentCard, sourceLang)
+        // Toggle Play/Stop button
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 64.dp)
+        ) {
+            // Play button (visible when not active)
+            if (!isActive) {
+                IconButton(
+                    onClick = {
+                        isActive = true
+                        currentFlashcard?.let { _ ->
+                            scope.launch {
+                                while (isActive) {
+                                    viewModel.loadRandomFlashcard()
+                                    // Wait for the current flashcard to update
+                                    delay(300)
+                                    // Get the latest flashcard
+                                    viewModel.currentFlashcard.value?.let { currentCard ->
+                                        tts.readCard(currentCard, sourceLang, sourceVoice)
+                                    }
+                                    // Add a longer delay between repetitions
+                                    delay(1000)
+                                }
                             }
-                            // Add a longer delay between repetitions
-                            delay(1000)
                         }
-                    }
+                    },
+                    modifier = Modifier.size(100.dp)
+                ) {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = "Start reading",
+                        modifier = Modifier.size(64.dp),
+                        tint = Color.White
+                    )
                 }
-            },
-            modifier = Modifier
-                .padding(bottom = 64.dp)
-                .size(100.dp)
-                .align(Alignment.BottomStart)
-        ) {
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = "Read card",
-                modifier = Modifier.size(64.dp),
-                tint = Color.White
-            )
-        }
-
-        // Stop button
-        IconButton(
-            onClick = {
-                isActive = false
-            },
-            modifier = Modifier
-                .padding(bottom = 64.dp)
-                .size(100.dp)
-                .align(Alignment.BottomEnd)
-        ) {
-            Icon(
-                Icons.Default.Clear,
-                contentDescription = "Stop reading",
-                modifier = Modifier.size(64.dp),
-                tint = Color.White
-            )
+            } else {
+                // Stop button (visible when active)
+                IconButton(
+                    onClick = {
+                        isActive = false
+                    },
+                    modifier = Modifier.size(100.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Pause,
+                        contentDescription = "Pause reading",
+                        modifier = Modifier.size(64.dp),
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }

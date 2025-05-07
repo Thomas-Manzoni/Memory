@@ -2,6 +2,7 @@ package com.example.memory.ui.components
 
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.memory.model.Flashcard
@@ -15,7 +16,9 @@ fun rememberTts(): TextToSpeech {
     val context = LocalContext.current
     // 1) Create TTS with an empty listener
     val tts = remember {
-        TextToSpeech(context) { /* you can handle onInit if you need to */ }
+        TextToSpeech(context) {
+
+        }
     }
         // 2) Now that `tts` exists, apply your default rate immediately
         .also { it.setSpeechRate(0.7f) }
@@ -29,13 +32,30 @@ fun rememberTts(): TextToSpeech {
 
 suspend fun TextToSpeech.readCard(
     card: Flashcard,
-    sourceLang: String
+    sourceLang: String,
+    preferredVoiceName: String? = null  // Add a parameter for exact voice name
 ) {
-    // inner helper unchanged
-    suspend fun TextToSpeech.awaitSpeak(text: String, langTag: String) {
+    // inner helper with specific voice selection
+    suspend fun TextToSpeech.awaitSpeak(text: String, langTag: String, voiceName: String? = null) {
         withContext(Dispatchers.Main) {
             val done = CompletableDeferred<Unit>()
+
+            // Set language first
             language = Locale.forLanguageTag(langTag)
+
+            // Try to set specific voice if provided
+            if (voiceName != null) {
+                val voices = voices
+                val desiredVoice = voices?.find { voice ->
+                    voice.name == voiceName &&
+                            voice.locale.toLanguageTag().startsWith(langTag.split("-")[0])
+                }
+
+                if (desiredVoice != null) {
+                    voice = desiredVoice
+                }
+            }
+
             val id = System.currentTimeMillis().toString()
             setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onDone(utteranceId: String?) {
@@ -52,12 +72,12 @@ suspend fun TextToSpeech.readCard(
     }
 
     // 1) original text in dynamic sourceLang
-    awaitSpeak(card.text, sourceLang)
+    awaitSpeak(card.text, sourceLang, preferredVoiceName)
 
     kotlinx.coroutines.delay(1000)
 
     // 2) translations always in English
     card.translations.forEach { translationText ->
-        awaitSpeak(translationText, "en-US")
+        awaitSpeak(translationText, "en-US", "en-us-x-iol-local")
     }
 }
