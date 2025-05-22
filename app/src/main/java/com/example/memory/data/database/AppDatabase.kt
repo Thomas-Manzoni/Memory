@@ -19,7 +19,7 @@ import com.example.memory.data.entity.LearnStatusConverter
     [FlashcardInsight::class,
     Category::class,
     FlashcardCategoryCrossRef::class],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(LearnStatusConverter::class)
@@ -109,7 +109,7 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
                 description TEXT NOT NULL,
                 sectionIndex INTEGER NOT NULL,
                 unitIndex INTEGER NOT NULL,
-                learnStatus INTEGER NOT NULL,
+                    learnStatus INTEGER NOT NULL,
                 isFavorite INTEGER NOT NULL
             )
         """)
@@ -126,6 +126,13 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
         // Drop old table and rename new one
         db.execSQL("DROP TABLE flashcard_insights")
         db.execSQL("ALTER TABLE flashcard_insights_new RENAME TO flashcard_insights")
+    }
+}
+
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Add the new lastStatusChange column with current time as default
+        db.execSQL("ALTER TABLE flashcard_insights ADD COLUMN lastStatusChange INTEGER NOT NULL DEFAULT 0")
     }
 }
 

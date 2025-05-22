@@ -419,6 +419,11 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    suspend fun fetchLearnStatus(flashcardId: String): LearnStatus {
+        val currentInsight = insightDao.getInsight(flashcardId)
+        return currentInsight?.learnStatus ?: LearnStatus.UNKNOWN
+    }
+
     suspend fun updateFavoriteStatus(flashcardId: String, isFavoriteInput: Boolean) {
         val currentInsight = insightDao.getInsight(flashcardId)
         if (currentInsight == null) {
@@ -450,20 +455,38 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     suspend fun updateCorrectAnswer(flashcardId: String) {
         val currentInsight = insightDao.getInsight(flashcardId)
         val currentProgress = progressDao.getProgress(languageId = currentCourse)
-
+        val currentTimeMillis = System.currentTimeMillis()
         if (currentInsight != null) {
+            val newLearnStatus = when (currentInsight.learnStatus) {
+                LearnStatus.UNKNOWN -> LearnStatus.LEARNING
+                LearnStatus.FORGOTTEN -> LearnStatus.LEARNING
+                LearnStatus.LEARNING -> {
+                    val timeSinceLastChange = currentTimeMillis - (currentInsight.lastStatusChange ?: 0)
+                    val thirtyMinutesInMillis = 30 * 60 * 1000
+
+                    if (timeSinceLastChange > thirtyMinutesInMillis) {
+                        LearnStatus.KNOWN
+                    } else {
+                        LearnStatus.LEARNING // Stay in learning state if not enough time has passed
+                    }
+                }
+                LearnStatus.KNOWN -> LearnStatus.KNOWN
+                else -> LearnStatus.LEARNING
+            }
+
+            val lastStatusChangeTime = if (newLearnStatus != currentInsight.learnStatus) {
+                currentTimeMillis // Update timestamp only when status changes
+            } else {
+                currentInsight.lastStatusChange // Keep existing timestamp if no change
+            }
+
             val updatedInsight = currentInsight.copy(
                 timesReviewed = currentInsight.timesReviewed + 1,
                 timesCorrect = currentInsight.timesCorrect + 1,
-                lastReviewed = System.currentTimeMillis(),
-                learnStatus = when (currentInsight.learnStatus) {
-                    LearnStatus.UNKNOWN -> LearnStatus.LEARNING
-                    LearnStatus.FORGOTTEN -> LearnStatus.LEARNING
-                    LearnStatus.LEARNING -> LearnStatus.KNOWN
-                    LearnStatus.KNOWN -> LearnStatus.KNOWN
-                    else -> LearnStatus.LEARNING
-                }
-                )
+                lastReviewed = currentTimeMillis,
+                learnStatus = newLearnStatus,
+                lastStatusChange = lastStatusChangeTime
+            )
             insightDao.updateInsight(updatedInsight)
         }
 
@@ -479,13 +502,23 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
     suspend fun updateWrongAnswer(flashcardId: String) {
         val currentInsight = insightDao.getInsight(flashcardId)
         val currentProgress = progressDao.getProgress(languageId = currentCourse)
+        val currentTimeMillis = System.currentTimeMillis()
 
         if (currentInsight != null) {
+            // For wrong answers, we always set status to FORGOTTEN
+            // We should update lastStatusChange only when the status actually changes
+            val lastStatusChangeTime = if (currentInsight.learnStatus != LearnStatus.FORGOTTEN) {
+                currentTimeMillis // Update timestamp only when status changes
+            } else {
+                currentInsight.lastStatusChange // Keep existing timestamp if already FORGOTTEN
+            }
+
             val updatedInsight = currentInsight.copy(
                 timesReviewed = currentInsight.timesReviewed + 1,
                 timesWrong = currentInsight.timesWrong + 1,
-                lastReviewed = System.currentTimeMillis(),
-                learnStatus = LearnStatus.FORGOTTEN
+                lastReviewed = currentTimeMillis,
+                learnStatus = LearnStatus.FORGOTTEN,
+                lastStatusChange = lastStatusChangeTime
             )
             insightDao.updateInsight(updatedInsight)
         }
@@ -688,7 +721,7 @@ class PlayCardViewModel(application: Application) : AndroidViewModel(application
         val flashcardPicks = if (untilProgressedUnit) {
             insightDao.debugWeightedPicksUntilProgress(maxSection = progressedSection, maxUnit = progressedUnit)
         } else if (randomWeightedMode){
-            insightDao.debugWeightedPicks()
+            insightDao.debugWeightedPicks(learnStatus = LearnStatus.UNKNOWN.ordinal)
         } else if (preSelectionMode){
             insightDao.debugWeightedPicksFromUnit(slctSection = preSelectedSectionIndex, slctUnit = preSelectedUnitIndex)
         } else {

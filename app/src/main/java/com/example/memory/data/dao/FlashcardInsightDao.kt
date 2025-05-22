@@ -35,11 +35,12 @@ interface FlashcardInsightDao {
                (ABS(RANDOM()) % 1000000) / 10000.0 AS randPart,
                0 AS mistakeWeight
         FROM flashcard_insights
+        WHERE (:learnStatus IS NULL OR learnStatus = :learnStatus)
     )
     ORDER BY score DESC
     LIMIT 10
     """)
-    suspend fun debugWeightedPicks(): List<DebugPick>
+    suspend fun debugWeightedPicks(learnStatus: Int? = null): List<DebugPick>
 
     @Query("""
     SELECT flashcardId,

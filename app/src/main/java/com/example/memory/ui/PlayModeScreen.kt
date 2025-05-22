@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.memory.R
+import com.example.memory.data.entity.LearnStatus
 import com.example.memory.viewmodel.PlayCardViewModel
 import kotlinx.coroutines.launch
 
@@ -68,6 +69,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
     var cardId by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var isCardFavorite by remember { mutableStateOf(false) }
+    var cardLearnStatus by remember { mutableStateOf(LearnStatus.UNKNOWN) }
     // Assume your ViewModel exposes a LiveData (or State) for the description
     cardId = currentFlashcard?.wordId.toString()
 
@@ -93,9 +95,16 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
         if (isFlapOpen && cardId.isNotBlank() && cardId != "null") {
             isFetching = true
             val desc = viewModel.fetchDescription(cardId)
-            isCardFavorite = viewModel.fetchIsFavorite(flashcardId = cardId)
             fetchedDescription = desc
             isFetching = false
+        }
+    }
+
+    LaunchedEffect(currentFlashcard) {
+        if (cardId.isNotBlank() && cardId != "null") {
+            // Update card favorite status and learn status when a new card is shown
+            isCardFavorite = viewModel.fetchIsFavorite(flashcardId = cardId)
+            cardLearnStatus = viewModel.fetchLearnStatus(flashcardId = cardId)
         }
     }
 
@@ -233,6 +242,21 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
 
                         Box(
                             modifier = Modifier
+                                .size(12.dp)
+                                .align(Alignment.TopCenter)
+                                .offset(y = 8.dp)
+                                .background(
+                                    color = when (cardLearnStatus) {
+                                        LearnStatus.UNKNOWN -> Color(0xFF9C27B0)   // Purple
+                                        LearnStatus.FORGOTTEN -> Color(0xFFE53935) // Red
+                                        LearnStatus.LEARNING -> Color(0xFFFFA726)  // Orange
+                                        LearnStatus.KNOWN -> Color(0xFF43A047)     // Green
+                                    },
+                                    shape = androidx.compose.foundation.shape.CircleShape
+                                )                        )
+
+                        Box(
+                            modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(16.dp)
                                 .clickable(
@@ -338,7 +362,7 @@ fun PlayScreen(viewModel: PlayCardViewModel = viewModel()) {
                                         val desc = viewModel.fetchDescription(cardId)
                                         fetchedDescription = desc
                                         // Initialize the editable value with the fetched value.
-                                        editedDescription = desc
+                                        editedDescription = ""
                                     }
 
                                     AlertDialog(

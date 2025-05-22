@@ -17,6 +17,7 @@ data class FlashcardInsight(
     val sectionIndex: Int = -1,
     val unitIndex: Int = -1,
     val learnStatus: LearnStatus = LearnStatus.UNKNOWN,
+    val lastStatusChange: Long = 0L,
     val isFavorite: Boolean = false
 )
 
